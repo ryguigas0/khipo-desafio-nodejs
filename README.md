@@ -14,9 +14,8 @@ Desenvolver uma API para gerenciar um sistema de tarefas e projetos, permitindo 
 
 1. Somente o criador do projeto pode adicionar ou remover membros.
 2. Tarefas só podem ser criadas por membros do projeto ao qual a tarefa pertence.
-3. Um usuário só pode ver, editar ou excluir tarefas que ele criou ou que foram atribuídas a ele.
-4. Um usuário só pode ser adicionado a um projeto se ele já estiver registrado na plataforma.
-5. Tarefas concluídas não podem ser editadas.
+3. Um usuário só pode ser adicionado a um projeto se ele já estiver registrado na plataforma.
+4. Tarefas concluídas não podem ser editadas.
 
 ## 💻 Tecnologias:
 
@@ -69,19 +68,20 @@ Desenvolver uma API para gerenciar um sistema de tarefas e projetos, permitindo 
 - Paginação nos endpoints.
 - Registro de logs.
 - Dockerização da aplicação.
+- Uso de um linter (como ESLint) e formatador de código (como Prettier).
 
 ## 🗳️ Instruções de Submissão:
 
 1. Faça um fork deste repositório para sua conta pessoal do GitHub.
-4. Commit e push suas mudanças para o seu fork.
-6. Envie um e-mail para [arthur.olga@khipo.com.br] com o link do repositório.
+2. Commit e push suas mudanças para o seu fork.
+3. Envie um e-mail para [arthur.olga@khipo.com.br] com o link do repositório.
 
 ## 🧪 Avaliação:
 
 - Estrutura do código e organização.
-- Uso das tecnologias propostas.
-- Implementação dos requisitos.
-- Tratamento de erros.
+- Uso adequado das ferramentas e tecnologias.
+- Implementação dos requisitos e regras de negócio.
+- Design e usabilidade.
 - Funcionalidades extras (diferenciais).
 
-Desejamos a você boa sorte! Estamos ansiosos para ver o que irá construir.
+Boa sorte com o desafio! Estamos ansiosos para ver sua solução.
