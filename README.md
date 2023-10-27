@@ -16,6 +16,7 @@ Desenvolver uma API para gerenciar um sistema de tarefas e projetos, permitindo 
 2. Tarefas só podem ser criadas por membros do projeto ao qual a tarefa pertence.
 3. Um usuário só pode ser adicionado a um projeto se ele já estiver registrado na plataforma.
 4. Tarefas concluídas não podem ser editadas.
+5. As tarefas precisam ter tags
 
 ## 💻 Tecnologias:
 
@@ -35,26 +36,32 @@ Desenvolver uma API para gerenciar um sistema de tarefas e projetos, permitindo 
 
 #### Usuário (`User`):
 
-- ID: UUID gerado automaticamente.
-- Nome: String.
-- Email: String, único.
-- Senha: String, encriptada.
+- ID: ID gerado automaticamente.
+- Nome: Texto.
+- Email: Texto, único.
+- Senha: Texto, encriptada.
 
 #### Projeto (`Project`):
 
-- ID: UUID gerado automaticamente.
-- Nome: String.
+- ID: ID gerado automaticamente.
+- Nome: Texto.
 - Descrição: Texto.
 - Membros: Lista de usuários associados ao projeto.
 
 #### Tarefa (`Task`):
 
-- ID: UUID gerado automaticamente.
-- Título: String, máximo de 255 caracteres.
+- ID: ID gerado automaticamente.
+- Título: Texto, máximo de 255 caracteres.
 - Descrição: Texto.
 - Data de criação: Data e hora, gerada automaticamente.
 - Status: Enum (Pendente, Em andamento, Concluída).
 - Projeto: Referência ao projeto ao qual pertence.
+
+#### Tag (`Tag`):
+
+- ID: ID gerado automaticamente.
+- Título: Texto.
+- Tarefa: Referência a tarefa ao qual pertence.
 
 ### 4. Validações e Erros:
 
