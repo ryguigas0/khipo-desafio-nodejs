@@ -22,7 +22,7 @@ Desenvolver uma API para gerenciar um sistema de tarefas e projetos, permitindo 
 
 - Node.js com TypeScript
 - PostgreSQL
-- ORM ou query builder de sua escolha (sugestão: TypeORM, Mo ou Prisma)
+- Prisma ORM
 
 ## 📜 Requisitos:
 
