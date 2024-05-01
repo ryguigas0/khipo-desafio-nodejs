@@ -2,16 +2,23 @@
   "name": "khipo-desafio-nodejs",
   "version": "1.0.0",
   "description": "<p align=\"center\">   <img title=\"a title\" alt=\"Alt text\" src=\"https://media.licdn.com/dms/image/D4E16AQGjCVuzlCthvg/profile-displaybackgroundimage-shrink_200_800/0/1690574706700?e=2147483647&v=beta&t=zlY1Mc10yQ3gA9qiZ4sZ7m8PkE-HIu8Haa1fUyKb_fU\"> </p>",
-  "main": "server.ts",
+  "main": "src/server.ts",
   "scripts": {
-    "serve": "npx ts-node ."
+    "start": "npx ts-node .",
+    "build": "npx tsc",
+    "serve": "npm run build && node ./build/server.js"
   },
   "keywords": [],
   "author": "Guilherme Oliveira Casagrande",
   "homepage": "https://github.com/ryguigas0/khipo-desafio-nodejs",
   "license": "ISC",
   "devDependencies": {
+    "@types/express": "^4.17.21",
+    "@types/node": "^20.12.7",
     "ts-node": "^10.9.2",
     "typescript": "^5.4.5"
+  },
+  "dependencies": {
+    "express": "^4.19.2"
   }
 }
