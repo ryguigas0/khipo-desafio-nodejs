@@ -3,7 +3,8 @@ import { Controller } from "./controllerInterface";
 import { Prisma, PrismaClient } from "@prisma/client";
 import { body, checkSchema, validationResult } from "express-validator";
 import newUserInSchema from "../validation/NewUserIn";
-import { userListView, userView } from "../views/users";
+import { userListView, userView } from "../views/userView";
+import argon2 from "argon2";
 
 
 const prisma = new PrismaClient()
@@ -22,12 +23,14 @@ controller.post(
 
         const { name, email, password } = req.body
 
+        let passwordHash = await argon2.hash(password)
+
         try {
             const model = await prisma.user.create({
                 data: {
                     name: name,
                     email: email,
-                    hash_password: password
+                    hashPassword: passwordHash
                 }
             })
 
