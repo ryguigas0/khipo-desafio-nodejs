@@ -1,10 +1,10 @@
 import { NextFunction, Request, Response } from "express";
-import jwt from "jsonwebtoken"
+import jwt, { JwtPayload } from "jsonwebtoken"
 import { jwtSecret } from "../env";
 
 
 export interface TokenRequest extends Request {
-    claims?: Object
+    claims?: any
 }
 
 export default function authenticateToken(req: TokenRequest, res: Response, next: NextFunction) {
@@ -19,7 +19,7 @@ export default function authenticateToken(req: TokenRequest, res: Response, next
     jwt.verify(token, jwtSecret, function (err, claims) {
         if (err) return tokenError(res, "Invalid Token")
 
-        req.claims = claims
+        req.claims = claims as JwtPayload
         next()
     })
 }

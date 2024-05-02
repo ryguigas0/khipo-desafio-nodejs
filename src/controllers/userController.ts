@@ -1,15 +1,15 @@
 import express, { Router, Request, Response, NextFunction } from "express"
 import { Controller } from "./controllerInterface";
-import { Prisma, PrismaClient } from "@prisma/client";
-import { body, checkSchema, validationResult } from "express-validator";
-import newUserInSchema from "../validation/NewUserIn";
+import { PrismaClient } from "@prisma/client";
+import { checkSchema, validationResult } from "express-validator";
 import { userListView, userView } from "../views/userView";
 import argon2 from "argon2";
-import updateUserInSchema from "../validation/UpdateUserInSchema";
 import { PrismaClientKnownRequestError, PrismaClientUnknownRequestError } from "@prisma/client/runtime/library";
 import { handlePrismaError } from "../errors/prismaErrorHandler";
 import { ResponseException } from "../errors/ResponseException";
-import deleteUserSchema from "../validation/DeleteUserSchema";
+import newUserInSchema from "../validation/user/NewUserIn";
+import updateUserInSchema from "../validation/user/UpdateUserInSchema";
+import deleteUserSchema from "../validation/user/DeleteUserSchema";
 
 
 const prisma = new PrismaClient()
@@ -48,6 +48,10 @@ controller.post(
             next(error)
         }
     });
+
+// ---------------------
+// ADMIN ONLY ROUTES
+// -----------------------
 
 controller.get(
     '/',

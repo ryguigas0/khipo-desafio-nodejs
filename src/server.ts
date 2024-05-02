@@ -4,7 +4,9 @@ import { Controller } from './controllers/controllerInterface';
 
 import userController from "./controllers/userController"
 import authController from "./controllers/authController"
+import projectController from './controllers/projectController';
 import generalErrorHandler from './middlewares/generalErrorHandler';
+
 import { port } from './env';
 
 
@@ -15,7 +17,8 @@ app.use(express.json())
 
 let controllers: Controller[] = [
   userController,
-  authController
+  authController,
+  projectController
 ]
 
 for (let i = 0; i < controllers.length; i++) {

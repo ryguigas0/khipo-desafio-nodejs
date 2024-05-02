@@ -1,7 +1,7 @@
 import express, { Router, Request, Response, NextFunction } from "express"
 import { Controller } from "./controllerInterface";
 import { checkSchema, validationResult } from "express-validator";
-import tokenCredentials from "../validation/TokenCredentials";
+import tokenCredentials from "../validation/auth/TokenCredentials";
 import tokenView from "../views/tokenView"
 import { PrismaClient } from "@prisma/client";
 import argon2 from "argon2";
@@ -32,20 +32,15 @@ controller.get('/token',
             let user = await prisma.user.findUnique({
                 where: {
                     email: email
-                },
-                include: {
-                    projects: true
                 }
             })
 
             if (user === null) {
                 throw new ResponseException("User not found!", 404)
             } else if (await argon2.verify(user.hashPassword, password)) {
-                let ownedProjects = user.projects.map(p => p.projectId)
 
                 let claims = {
                     userId: user.id,
-                    ownedProjects
                 }
 
                 const accessToken = jwt.sign(claims, jwtSecret, { expiresIn: jwtDuration })

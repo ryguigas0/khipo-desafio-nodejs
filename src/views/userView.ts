@@ -1,7 +1,7 @@
 import { User } from "@prisma/client";
 
 
-interface UserOut {
+export interface UserOut {
     id: number,
     email: string,
     name: string
