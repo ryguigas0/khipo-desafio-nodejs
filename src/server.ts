@@ -4,7 +4,6 @@ import { Controller } from './controllers/controllerInterface';
 
 import userController from "./controllers/userController"
 import authController from "./controllers/authController"
-import prismaErrorHandler from './middlewares/prismaErrorHandler';
 import generalErrorHandler from './middlewares/generalErrorHandler';
 import { port } from './env';
 
@@ -24,7 +23,6 @@ for (let i = 0; i < controllers.length; i++) {
   app.use(controller.route, controller.controller)
 }
 
-app.use(prismaErrorHandler)
 app.use(generalErrorHandler)
 
 app.listen(port, () => {

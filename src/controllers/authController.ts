@@ -9,6 +9,7 @@ import jwt from "jsonwebtoken"
 import authenticateToken, { TokenRequest } from "../middlewares/authHandler";
 
 import { jwtDuration, jwtSecret } from "../env";
+import { ResponseException } from "../errors/ResponseException";
 
 const prisma = new PrismaClient()
 
@@ -38,7 +39,7 @@ controller.get('/token',
             })
 
             if (user === null) {
-                res.status(404).send("User not found!")
+                throw new ResponseException("User not found!", 404)
             } else if (await argon2.verify(user.hashPassword, password)) {
                 let ownedProjects = user.projects.map(p => p.projectId)
 
@@ -51,7 +52,7 @@ controller.get('/token',
 
                 res.status(201).send(tokenView(accessToken, jwtDuration))
             } else {
-                res.status(401).send("Unauthenticated!")
+                throw new ResponseException("Unauthenticated: wrong password", 401)
             }
         } catch (error) {
             next(error)
