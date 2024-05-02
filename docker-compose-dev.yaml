@@ -1,0 +1,19 @@
+version: '3.8'
+name: project-manager-dev
+
+volumes:
+  dbdev:
+    driver: local
+
+services:
+  db:
+    container_name: proj-manager-postgres
+    image: postgres:latest
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=admin
+      - POSTGRES_PASSWORD=admin
+      - POSTGRES_DB=project_manager_dev
+    volumes:
+      - /dbdev

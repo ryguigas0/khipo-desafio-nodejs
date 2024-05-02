@@ -1,0 +1,5 @@
+.eslin*
+.prettier*
+README.md
+.env.example
+.vscode

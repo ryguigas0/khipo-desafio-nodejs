@@ -1,11 +1,22 @@
 version: '3.8'
-name: project-manager-dev
+name: project-manager
 
 volumes:
-  dbdev:
+  db:
     driver: local
 
 services:
+  api:
+    container_name: proj-manager-api
+    build: .
+    ports:
+      - "4000:4000"
+    environment:
+      - DATABASE_URL=postgresql://admin:admin@db:5432/project_manager?schema=public
+      - JWT_SECRET=prod-secret
+      - PORT=4000
+    depends_on:
+      - db
   db:
     container_name: proj-manager-postgres
     image: postgres:latest
@@ -14,6 +25,6 @@ services:
     environment:
       - POSTGRES_USER=admin
       - POSTGRES_PASSWORD=admin
-      - POSTGRES_DB=project_manager_dev
+      - POSTGRES_DB=project_manager
     volumes:
-      - /dbdev
+      - /db
