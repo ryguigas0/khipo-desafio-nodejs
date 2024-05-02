@@ -2,5 +2,7 @@
 package.json
 package-lock.json
 tsconfig.json
-docker-compose.yaml
+Dockerfile
+docker-compose*
 README.md
+prisma/*
