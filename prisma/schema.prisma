@@ -14,19 +14,21 @@ datasource db {
 }
 
 model User {
-  id            Int             @id @default(autoincrement())
-  name          String
-  email         String          @unique
+  id           Int             @id @default(autoincrement())
+  name         String
+  email        String          @unique
   hashPassword String
-  projects      UserToProject[]
-  Project       Project[]
+  projects     UserToProject[]
+  Project      Project[]
 }
 
 model UserToProject {
   createdAt DateTime @default(now())
-  user      User     @relation(fields: [userId], references: [id])
+  // when the user is deleted, remove them from usersprojects
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId    Int
-  project   Project  @relation(fields: [projectId], references: [id])
+  // when the project is deleted, remove them from usersprojects
+  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
   projectId Int
 
   @@id([userId, projectId])
@@ -36,7 +38,8 @@ model Project {
   id          Int             @id @default(autoincrement())
   name        String
   description String?
-  owner       User            @relation(fields: [userOwnerId], references: [id])
+  // when the project owner is deleted, delete their projects
+  owner       User            @relation(fields: [userOwnerId], references: [id], onDelete: Cascade)
   userOwnerId Int
   members     UserToProject[]
   Task        Task[]
@@ -48,15 +51,18 @@ model Task {
   description String?
   createdAt   DateTime    @default(now())
   status      String      @default("pending")
-  project     Project     @relation(fields: [projectId], references: [id])
+  // when a project is deleted, delete this task
+  project     Project     @relation(fields: [projectId], references: [id], onDelete: Cascade)
   projectId   Int
   TaskToTag   TaskToTag[]
 }
 
 model TaskToTag {
-  tag    Tag  @relation(fields: [tagId], references: [id])
+  // when a tag is deleted, delete this entry
+  tag    Tag  @relation(fields: [tagId], references: [id], onDelete: Cascade)
   tagId  Int
-  task   Task @relation(fields: [taskId], references: [id])
+  // when a task is deleted, delete this entry
+  task   Task @relation(fields: [taskId], references: [id], onDelete: Cascade)
   taskId Int
 
   @@id([tagId, taskId])

@@ -10,15 +10,15 @@ let newProjectIn: Schema = {
         optional: true,
         notEmpty: true
     },
-    "members.*": {
-        in: ["body"],
-        optional: true,
-        isInt: {
-            options: {
-                min: 0
-            }
-        }
-    }
+    // "members.*": {
+    //     in: ["body"],
+    //     optional: true,
+    //     isInt: {
+    //         options: {
+    //             min: 0
+    //         }
+    //     }
+    // }
 }
 
 export default newProjectIn

@@ -5,6 +5,11 @@ const updateUserInSchema: Schema = {
     in: ["params"],
     notEmpty: {
       errorMessage: "User ID not provided"
+    },
+    isInt: {
+      options: {
+        min: 0
+      }
     }
   },
   name: {
