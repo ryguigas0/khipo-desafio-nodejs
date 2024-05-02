@@ -9,6 +9,7 @@ import updateUserInSchema from "../validation/UpdateUserInSchema";
 import { PrismaClientKnownRequestError, PrismaClientUnknownRequestError } from "@prisma/client/runtime/library";
 import { handlePrismaError } from "../errors/prismaErrorHandler";
 import { ResponseException } from "../errors/ResponseException";
+import deleteUserSchema from "../validation/DeleteUserSchema";
 
 
 const prisma = new PrismaClient()
@@ -62,8 +63,6 @@ controller.put(
     checkSchema(updateUserInSchema),
     async (req: Request, res: Response, next: NextFunction) => {
         try {
-
-
             const errors = validationResult(req);
             if (!errors.isEmpty()) {
                 return res.status(400).json({ errors: errors.array() });
@@ -115,10 +114,43 @@ controller.put(
                     data: updateData
                 })
 
-                res.send(userView(updatedUser))
+                res.status(200).send(userView(updatedUser))
             } else {
                 throw new ResponseException("No update data provided!", 400)
             }
+        } catch (error) {
+            next(error)
+        }
+    }
+)
+
+controller.delete(
+    "/:userId",
+    checkSchema(deleteUserSchema),
+    async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const errors = validationResult(req);
+            if (!errors.isEmpty()) {
+                return res.status(400).json({ errors: errors.array() });
+            }
+
+            const userId = Number.parseInt(req.params.userId)
+
+            const userFound = await prisma.user.findUnique({
+                where: {
+                    id: userId
+                }
+            })
+
+            if (!userFound) throw new ResponseException("User not found!", 404)
+
+            await prisma.user.delete({
+                where: {
+                    id: userId
+                }
+            })
+
+            res.status(200).send({ ok: "Deleted user!" })
         } catch (error) {
             next(error)
         }
