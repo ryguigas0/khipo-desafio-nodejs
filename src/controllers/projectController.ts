@@ -171,9 +171,7 @@ controller.get(
                         {
                             members: {
                                 some: {
-                                    user: {
-                                        id: userId
-                                    }
+                                    userId: userId
                                 }
                             }
                         }

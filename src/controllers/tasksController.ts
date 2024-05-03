@@ -36,37 +36,9 @@ controller.post(
         const projectId = Number.parseInt(req.params.projectId)
 
         try {
-            // Check if its the owner or member
-            const project = await prisma.project.findUnique({
-                where: {
-                    id: projectId,
-                    OR: [
-                        {
-                            userOwnerId: userId
-                        },
-                        {
-                            members: {
-                                some: {
-                                    user: {
-                                        id: userId
-                                    }
-                                }
-                            }
-                        }
-                    ]
-                },
-                include: {
-                    owner: true,
-                    members: {
-                        select: {
-                            user: true
-                        }
-                    },
-                }
-            })
-
             // Not members or owners cannot create tasks
-            if (!project) throw new ResponseException("Not owner or member of project!", 403)
+            if (!await isOwnerOrMember(projectId, userId))
+                throw new ResponseException("Not owner or member of project!", 403)
 
             const { title, description, assignedMemberId, tags } = req.body
 
@@ -80,6 +52,10 @@ controller.post(
             }
 
             if (assignedMemberId) {
+                // Check if its the owner or member assigned
+                if (!await isOwnerOrMember(projectId, Number.parseInt(assignedMemberId)))
+                    throw new ResponseException("Assigned member not owner or member of project!", 403)
+
                 newTaskData.assignedMemberId = assignedMemberId
             }
 
@@ -124,6 +100,28 @@ controller.post(
         }
     }
 )
+
+async function isOwnerOrMember(projectId: number, userId: number) {
+    const project = await prisma.project.findUnique({
+        where: {
+            id: projectId,
+            OR: [
+                {
+                    userOwnerId: userId
+                },
+                {
+                    members: {
+                        some: {
+                            userId: userId
+                        }
+                    }
+                }
+            ]
+        }
+    })
+
+    return !(project === null)
+}
 
 // controller.get(
 //     "/",
