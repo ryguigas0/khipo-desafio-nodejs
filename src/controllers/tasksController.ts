@@ -16,6 +16,7 @@ import getProjectSchema from "../validation/projects/getProjectSchema";
 import newTaskIn from "../validation/tasks/newTaskIn";
 import { taskView } from "../views/taskView";
 import updateTaskIn from "../validation/tasks/updateTaskIn";
+import deleteTaskIn from "../validation/tasks/deleteTaskIn";
 
 const prisma = new PrismaClient()
 
@@ -194,42 +195,49 @@ controller.put(
     }
 )
 
-// controller.delete(
-//     "/:projectId",
-//     checkSchema(deleteProjectSchema),
-//     async (req: TokenRequest, res: Response, next: NextFunction) => {
-//         try {
-//             const errors = validationResult(req);
-//             if (!errors.isEmpty()) {
-//                 return res.status(400).json({ errors: errors.array() });
-//             }
+controller.delete(
+    "/:projectId/tasks/:taskId",
+    checkSchema(deleteTaskIn),
+    async (req: TokenRequest, res: Response, next: NextFunction) => {
+        try {
+            const errors = validationResult(req);
+            if (!errors.isEmpty()) {
+                return res.status(400).json({ errors: errors.array() });
+            }
 
-//             const userOwnerId = Number.parseInt(req.claims.userId)
+            const userId = Number.parseInt(req.claims.userId)
 
-//             const projectId = Number.parseInt(req.params.projectId)
+            const projectId = Number.parseInt(req.params.projectId)
 
-//             const project = await prisma.project.findUnique({
-//                 where: {
-//                     id: projectId,
-//                     userOwnerId: userOwnerId
-//                 }
-//             })
+            if (!await isOwnerOrMember(userId, projectId))
+                throw new ResponseException("Only members or the owner of this project can remove tasks!", 401)
 
-//             // Not owners cannot edit project
-//             if (!project) throw new ResponseException("Not owner of project or project was not created!", 404)
+            const taskId = Number.parseInt(req.params.taskId)
 
-//             await prisma.project.delete({
-//                 where: {
-//                     id: projectId
-//                 }
-//             })
+            const task = await prisma.task.findUnique({
+                where: {
+                    id: taskId
+                }
+            })
 
-//             res.status(200).send({ ok: "Deleted project!" })
-//         } catch (error) {
-//             next(error)
-//         }
-//     }
-// )
+            if (!task) throw new ResponseException("Task not found!", 404)
+
+            if (task.status === "done") throw new ResponseException("Cannot edit done tasks!", 401)
+
+            await prisma.task.delete({
+                where: {
+                    id: taskId
+                }
+            })
+
+            res.status(200).json({
+                ok: "Deleted task!"
+            })
+        } catch (error) {
+            next(error)
+        }
+    }
+)
 
 // controller.get(
 //     "/:projectId",
