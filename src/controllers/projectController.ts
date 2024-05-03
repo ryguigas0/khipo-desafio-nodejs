@@ -10,6 +10,11 @@ import listProjectsIn from "../validation/projects/listProjectsIn";
 import newProjectIn from "../validation/projects/newProjectIn";
 import deleteProjectSchema from "../validation/projects/deleteProjectSchema";
 import updateProjectSchema from "../validation/projects/updateProjectSchema";
+import projectMemberIn from "../validation/projects/projectMemberSchema";
+import { PrismaClientKnownRequestError, PrismaClientUnknownRequestError } from "@prisma/client/runtime/library";
+import { handlePrismaError } from "../errors/prismaErrorHandler";
+import { userView } from "../views/userView";
+import getProjectSchema from "../validation/projects/getProjectSchema";
 
 const prisma = new PrismaClient()
 
@@ -28,7 +33,7 @@ controller.post(
         }
 
         const { userId: userOwnerId } = req.claims
-        const { name, description, memberIds } = req.body
+        const { name, description } = req.body
 
         let newProjectData: any = {
             name: name,
@@ -42,36 +47,8 @@ controller.post(
 
         try {
             const projModel = await prisma.project.create({
-                data: {
-                    name: name,
-                    userOwnerId: userOwnerId,
-                },
+                data: newProjectData,
             })
-
-            // if (memberIds && memberIds.length > 0) {
-            //     let memberUsers = await prisma.user.findMany({
-            //         where: {
-            //             id: {
-            //                 in: memberIds
-            //             }
-            //         }
-            //     })
-
-            //     let usersProjectData = []
-
-            //     for (let i = 0; i < memberUsers.length; i++) {
-            //         const member = memberUsers[i];
-            //         usersProjectData.push({
-            //             userId: member.id,
-            //             projectId: projModel.id
-            //         })
-            //     }
-
-            //     const usersToProject = await prisma.userToProject.createMany({
-            //         data: usersProjectData,
-            //         skipDuplicates: true
-            //     })
-            // }
 
             res.status(200).json(projectView(projModel))
         } catch (error) {
@@ -171,6 +148,58 @@ controller.delete(
     }
 )
 
+controller.get(
+    "/:projectId",
+    checkSchema(getProjectSchema),
+    async (req: TokenRequest, res: Response, next: NextFunction) => {
+        try {
+            const errors = validationResult(req);
+            if (!errors.isEmpty()) {
+                return res.status(400).json({ errors: errors.array() });
+            }
+
+            const userId = Number.parseInt(req.claims.userId)
+
+            const projectId = Number.parseInt(req.params.projectId)
+
+            // To see project info you need to be the owner or the member
+            const project = await prisma.project.findUnique({
+                where: {
+                    id: projectId,
+                    OR: [
+                        {
+                            userOwnerId: userId
+                        },
+                        {
+                            members: {
+                                some: {
+                                    user: {
+                                        id: userId
+                                    }
+                                }
+                            }
+                        }
+                    ]
+                },
+                include: {
+                    owner: true,
+                    members: {
+                        include: {
+                            user: true
+                        }
+                    },
+                }
+            })
+
+            if (!project) throw new ResponseException("Not owner or member of project!", 403)
+
+            res.status(200).send(projectView(project))
+        } catch (error) {
+            next(error)
+        }
+    }
+)
+
 
 controller.get(
     "/",
@@ -201,16 +230,115 @@ controller.get(
             },
             include: {
                 owner: true,
-                members: {
-                    include: {
-                        user: true
-                    }
-                },
+                // members: {
+                //     include: {
+                //         user: true
+                //     }
+                // },
             }
         })
 
         res.status(200).json(projectListView(projects))
 
+    }
+)
+
+
+
+controller.post(
+    "/:projectId/members/",
+    checkSchema(projectMemberIn),
+    async (req: TokenRequest, res: Response, next: NextFunction) => {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(400).json({ errors: errors.array() });
+        }
+
+        const projectId = Number.parseInt(req.params.projectId)
+
+        const memberEmail = req.body.memberEmail
+
+        try {
+            const user = await prisma.user.findUnique({
+                where: {
+                    email: memberEmail
+                }
+            })
+
+            if (!user) {
+                throw new ResponseException(`User with email ${memberEmail} not found!`, 404)
+            }
+
+            let userToProject = await prisma.userToProject.create({
+                data: {
+                    projectId: projectId,
+                    userId: user.id
+                }
+            })
+
+            res.status(200).json(userView(user))
+        } catch (error) {
+            if (error instanceof PrismaClientKnownRequestError) {
+                return next(handlePrismaError(`Member ${memberEmail}`, error))
+            }
+            next(error)
+        }
+    }
+)
+
+controller.delete(
+    "/:projectId/members/",
+    checkSchema(projectMemberIn),
+    async (req: TokenRequest, res: Response, next: NextFunction) => {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(400).json({ errors: errors.array() });
+        }
+
+        const projectId = Number.parseInt(req.params.projectId)
+
+        const memberEmail = req.body.memberEmail
+
+        try {
+            const user = await prisma.user.findUnique({
+                where: {
+                    email: memberEmail
+                }
+            })
+
+            if (!user) {
+                throw new ResponseException(`User with email ${memberEmail} not found!`, 404)
+            }
+
+            let userToProject = await prisma.userToProject.findUnique({
+                where: {
+                    userId_projectId: {
+                        projectId: projectId,
+                        userId: user.id
+                    }
+                }
+            })
+
+            if (!userToProject) {
+                throw new ResponseException(`Member with email ${memberEmail} not found!`, 404)
+            }
+
+            await prisma.userToProject.delete({
+                where: {
+                    userId_projectId: {
+                        projectId: projectId,
+                        userId: user.id
+                    }
+                }
+            })
+
+            res.status(200).json({ ok: "Removed member!" })
+        } catch (error) {
+            if (error instanceof PrismaClientKnownRequestError) {
+                return next(handlePrismaError(`Member ${memberEmail}`, error))
+            }
+            next(error)
+        }
     }
 )
 

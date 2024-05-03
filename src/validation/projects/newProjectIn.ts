@@ -8,17 +8,9 @@ let newProjectIn: Schema = {
     description: {
         in: ["body"],
         optional: true,
-        notEmpty: true
-    },
-    // "members.*": {
-    //     in: ["body"],
-    //     optional: true,
-    //     isInt: {
-    //         options: {
-    //             min: 0
-    //         }
-    //     }
-    // }
+        notEmpty: true,
+        isString: true
+    }
 }
 
 export default newProjectIn

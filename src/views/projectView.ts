@@ -3,10 +3,8 @@ import { UserOut, userListView, userView } from "./userView";
 
 
 interface ProjectIn extends Project {
-    owner?:  User,
-    members?: {
-        user: User
-    }[],
+    owner?: User,
+    members?: {user: User}[],
     // tasks: TaskOut[]
 }
 
