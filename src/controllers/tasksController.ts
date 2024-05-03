@@ -15,6 +15,7 @@ import { userView } from "../views/userView";
 import getProjectSchema from "../validation/projects/getProjectSchema";
 import newTaskIn from "../validation/tasks/newTaskIn";
 import { taskView } from "../views/taskView";
+import updateTaskIn from "../validation/tasks/updateTaskIn";
 
 const prisma = new PrismaClient()
 
@@ -123,101 +124,75 @@ async function isOwnerOrMember(projectId: number, userId: number) {
     return !(project === null)
 }
 
-// controller.get(
-//     "/",
-//     checkSchema(listProjectsIn),
-//     async (req: TokenRequest, res: Response) => {
-//         const errors = validationResult(req);
-//         if (!errors.isEmpty()) {
-//             return res.status(400).json({ errors: errors.array() });
-//         }
+controller.put(
+    "/:projectId/tasks/:taskId",
+    checkSchema(updateTaskIn),
+    async (req: TokenRequest, res: Response, next: NextFunction) => {
+        try {
+            const errors = validationResult(req);
+            if (!errors.isEmpty()) {
+                return res.status(400).json({ errors: errors.array() });
+            }
 
-//         const { userId } = req.claims
-//         const { owned, member } = req.query
+            const userId = Number.parseInt(req.claims.userId)
 
-//         const projects = await prisma.project.findMany({
-//             where: {
-//                 OR: [
-//                     {
-//                         userOwnerId: userId
-//                     },
-//                     {
-//                         members: {
-//                             some: {
-//                                 userId: userId
-//                             }
-//                         }
-//                     }
-//                 ]
-//             },
-//             include: {
-//                 owner: true,
-//                 // members: {
-//                 //     include: {
-//                 //         user: true
-//                 //     }
-//                 // },
-//             }
-//         })
+            const projectId = Number.parseInt(req.params.projectId)
 
-//         res.status(200).json(projectListView(projects))
+            if (!await isOwnerOrMember(userId, projectId))
+                throw new ResponseException("Only members or the owner of this project can edit tasks!", 401)
 
-//     }
-// )
+            const taskId = Number.parseInt(req.params.taskId)
 
-// controller.put(
-//     "/:projectId",
-//     checkSchema(updateProjectSchema),
-//     async (req: TokenRequest, res: Response, next: NextFunction) => {
-//         try {
-//             const errors = validationResult(req);
-//             if (!errors.isEmpty()) {
-//                 return res.status(400).json({ errors: errors.array() });
-//             }
+            const task = await prisma.task.findUnique({
+                where: {
+                    id: taskId
+                }
+            })
 
-//             const userOwnerId = Number.parseInt(req.claims.userId)
+            if (!task) throw new ResponseException("Task not found!", 404)
 
-//             const projectId = Number.parseInt(req.params.projectId)
+            if (task.status === "done") throw new ResponseException("Cannot edit done tasks!", 401)
 
-//             const project = await prisma.project.findUnique({
-//                 where: {
-//                     id: projectId,
-//                     userOwnerId: userOwnerId
-//                 }
-//             })
+            const { title, description, assignedMemberId, status } = req.body
 
-//             // Not owners cannot edit project
-//             if (!project) throw new ResponseException("Not owner of project or project was not created!", 404)
+            let updateData: any = {}
 
-//             const { name, description } = req.body
+            if (assignedMemberId) {
+                if (!await isOwnerOrMember(assignedMemberId, projectId))
+                    throw new ResponseException("Only members or the owner of this project can be assigned tasks!", 401)
 
-//             let updateData: any = {}
+                updateData.assignedMemberId = assignedMemberId
+            }
 
-//             if (name) {
-//                 updateData.name = name
-//             }
+            if (title) {
+                updateData.title = title
+            }
 
-//             if (description) {
-//                 updateData.description = description
-//             }
+            if (description) {
+                updateData.description = description
+            }
 
-//             if (Object.keys(updateData).length > 0) {
-//                 const updatedProject = await prisma.project.update({
-//                     where: {
-//                         id: projectId
-//                     },
-//                     data: updateData
-//                 })
+            if (status) {
+                updateData.status = status
+            }
 
-//                 res.status(200).send(projectView(updatedProject))
-//             } else {
-//                 throw new ResponseException("No update data provided!", 400)
-//             }
-//         } catch (error) {
-//             next(error)
-//         }
-//     }
-// )
+            if (Object.keys(updateData).length > 0) {
+                const updatedTask = await prisma.task.update({
+                    where: {
+                        id: taskId
+                    },
+                    data: updateData
+                })
+
+                res.status(200).send(taskView(updatedTask))
+            } else {
+                throw new ResponseException("No update data provided!", 400)
+            }
+        } catch (error) {
+            next(error)
+        }
+    }
+)
 
 // controller.delete(
 //     "/:projectId",
