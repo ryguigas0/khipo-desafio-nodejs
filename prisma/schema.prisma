@@ -20,6 +20,7 @@ model User {
   hashPassword String
   projects     UserToProject[]
   Project      Project[]
+  Task         Task[]
 }
 
 model UserToProject {
@@ -46,15 +47,18 @@ model Project {
 }
 
 model Task {
-  id          Int         @id @default(autoincrement())
-  title       String      @db.VarChar(255)
-  description String?
-  createdAt   DateTime    @default(now())
-  status      String      @default("pending")
+  id                  Int         @id @default(autoincrement())
+  title               String      @db.VarChar(255)
+  description         String?
+  createdAt           DateTime    @default(now())
+  status              String      @default("pending")
   // when a project is deleted, delete this task
-  project     Project     @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  projectId   Int
-  TaskToTag   TaskToTag[]
+  project             Project     @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  projectId           Int
+  // when the responsible user is deleted, set as null
+  assignedMember   User?       @relation(fields: [assignedMemberId], references: [id], onDelete: SetNull)
+  assignedMemberId Int?
+  TaskToTag           TaskToTag[]
 }
 
 model TaskToTag {
