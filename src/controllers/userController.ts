@@ -4,8 +4,7 @@ import { PrismaClient } from "@prisma/client";
 import { checkSchema, validationResult } from "express-validator";
 import { userListView, userView } from "../views/userView";
 import argon2 from "argon2";
-import { PrismaClientKnownRequestError, PrismaClientUnknownRequestError } from "@prisma/client/runtime/library";
-import { handlePrismaError } from "../errors/prismaErrorHandler";
+import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 import { ResponseException } from "../errors/ResponseException";
 import newUserInSchema from "../validation/user/NewUserIn";
 import updateUserInSchema from "../validation/user/UpdateUserInSchema";
@@ -41,8 +40,8 @@ controller.post(
 
             res.status(201).send(userView(model))
         } catch (error: any) {
-            if (error instanceof PrismaClientKnownRequestError || error instanceof PrismaClientUnknownRequestError) {
-                return next(handlePrismaError("email", error))
+            if (error instanceof PrismaClientKnownRequestError && error.code === "P2002") {
+                return next(new ResponseException("Email is already registered!", 400))
             }
 
             next(error)

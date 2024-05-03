@@ -1,9 +1,8 @@
-import express, { Router, Request, Response, NextFunction } from "express"
+import express, { Router, Response, NextFunction } from "express"
 import { PrismaClient } from "@prisma/client";
 import { Controller } from "./controllerInterface";
-import { check, checkSchema, validationResult } from "express-validator";
+import { checkSchema, validationResult } from "express-validator";
 import { ResponseException } from "../errors/ResponseException";
-import authController from "./authController";
 import authenticateToken, { TokenRequest } from "../middlewares/authHandler";
 import { projectListView, projectView } from "../views/projectView";
 import listProjectsIn from "../validation/projects/listProjectsIn";
@@ -11,8 +10,7 @@ import newProjectIn from "../validation/projects/newProjectIn";
 import deleteProjectSchema from "../validation/projects/deleteProjectSchema";
 import updateProjectSchema from "../validation/projects/updateProjectSchema";
 import projectMemberIn from "../validation/projects/projectMemberSchema";
-import { PrismaClientKnownRequestError, PrismaClientUnknownRequestError } from "@prisma/client/runtime/library";
-import { handlePrismaError } from "../errors/prismaErrorHandler";
+import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 import { userView } from "../views/userView";
 import getProjectSchema from "../validation/projects/getProjectSchema";
 
@@ -254,11 +252,13 @@ controller.post(
             return res.status(400).json({ errors: errors.array() });
         }
 
-        const projectId = Number.parseInt(req.params.projectId)
-
-        const memberEmail = req.body.memberEmail
-
         try {
+            const userId = Number.parseInt(req.claims.userId)
+
+            const projectId = Number.parseInt(req.params.projectId)
+
+            const memberEmail = req.body.memberEmail
+
             const user = await prisma.user.findUnique({
                 where: {
                     email: memberEmail
@@ -278,8 +278,8 @@ controller.post(
 
             res.status(200).json(userView(user))
         } catch (error) {
-            if (error instanceof PrismaClientKnownRequestError) {
-                return next(handlePrismaError(`Member ${memberEmail}`, error))
+            if (error instanceof PrismaClientKnownRequestError && error.code === "P2002") {
+                return next(new ResponseException("Member is already registered!", 400))
             }
             next(error)
         }
@@ -334,8 +334,8 @@ controller.delete(
 
             res.status(200).json({ ok: "Removed member!" })
         } catch (error) {
-            if (error instanceof PrismaClientKnownRequestError) {
-                return next(handlePrismaError(`Member ${memberEmail}`, error))
+            if (error instanceof PrismaClientKnownRequestError && error.code === "P2025") {
+                return next(new ResponseException("Member not found!", 404))
             }
             next(error)
         }
