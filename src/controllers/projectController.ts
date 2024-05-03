@@ -182,10 +182,11 @@ controller.get(
                 include: {
                     owner: true,
                     members: {
-                        include: {
+                        select: {
                             user: true
                         }
                     },
+                    tasks: true
                 }
             })
 
@@ -341,8 +342,5 @@ controller.delete(
         }
     }
 )
-
-
-
 
 export default { controller, route } as Controller

@@ -1,11 +1,12 @@
 import { Project, User } from "@prisma/client";
 import { UserOut, userListView, userView } from "./userView";
+import { TaskIn, TaskOut, tasksListView } from "./taskView";
 
 
 interface ProjectIn extends Project {
     owner?: User,
-    members?: {user: User}[],
-    // tasks: TaskOut[]
+    members?: { user: User }[],
+    tasks?: TaskIn[]
 }
 
 interface ProjectOut {
@@ -14,7 +15,7 @@ interface ProjectOut {
     description: string,
     owner?: UserOut,
     members?: UserOut[],
-    // tasks: TaskOut[]
+    tasks?: TaskOut[]
 }
 
 export function projectListView(projects: ProjectIn[]): ProjectOut[] {
@@ -42,6 +43,10 @@ export function projectView(project: ProjectIn): ProjectOut {
 
     if (project.members) {
         projView.members = userListView(project.members.map(m => m.user))
+    }
+
+    if (project.tasks) {
+        projView.tasks = tasksListView(project.tasks)
     }
 
     return projView

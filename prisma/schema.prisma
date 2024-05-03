@@ -51,7 +51,7 @@ model Task {
   title               String      @db.VarChar(255)
   description         String?
   createdAt           DateTime    @default(now())
-  status              String      @default("pending")
+  status              String      @default("pending") //pending, ongoing or done
   // when a project is deleted, delete this task
   project             Project     @relation(fields: [projectId], references: [id], onDelete: Cascade)
   projectId           Int

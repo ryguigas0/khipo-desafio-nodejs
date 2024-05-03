@@ -8,6 +8,7 @@ import projectController from './controllers/projectController';
 import generalErrorHandler from './middlewares/generalErrorHandler';
 
 import { port } from './env';
+import tasksController from './controllers/tasksController';
 
 
 
@@ -18,7 +19,8 @@ app.use(express.json())
 let controllers: Controller[] = [
   userController,
   authController,
-  projectController
+  projectController,
+  tasksController
 ]
 
 for (let i = 0; i < controllers.length; i++) {
