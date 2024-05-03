@@ -43,7 +43,7 @@ model Project {
   owner       User            @relation(fields: [userOwnerId], references: [id], onDelete: Cascade)
   userOwnerId Int
   members     UserToProject[]
-  Task        Task[]
+  tasks        Task[]
 }
 
 model Task {
@@ -58,7 +58,7 @@ model Task {
   // when the responsible user is deleted, set as null
   assignedMember   User?       @relation(fields: [assignedMemberId], references: [id], onDelete: SetNull)
   assignedMemberId Int?
-  TaskToTag           TaskToTag[]
+  tags           TaskToTag[]
 }
 
 model TaskToTag {
@@ -75,5 +75,5 @@ model TaskToTag {
 model Tag {
   id        Int         @id @default(autoincrement())
   title     String
-  TaskToTag TaskToTag[]
+  tasks TaskToTag[]
 }
