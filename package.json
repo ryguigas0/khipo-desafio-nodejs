@@ -4,7 +4,7 @@
   "description": "<p align=\"center\">   <img title=\"a title\" alt=\"Alt text\" src=\"https://media.licdn.com/dms/image/D4E16AQGjCVuzlCthvg/profile-displaybackgroundimage-shrink_200_800/0/1690574706700?e=2147483647&v=beta&t=zlY1Mc10yQ3gA9qiZ4sZ7m8PkE-HIu8Haa1fUyKb_fU\"> </p>",
   "main": "src/server.ts",
   "scripts": {
-    "start": "npx ts-node .",
+    "start": "tsc && node ./build/server.js",
     "build": "npm run migrate && npx tsc",
     "prod": "npm run build && node build/server.js",
     "dev": "npx nodemon src/server.ts",

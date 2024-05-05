@@ -4,19 +4,12 @@ import { Controller } from "./controllerInterface";
 import { checkSchema, validationResult } from "express-validator";
 import { ResponseException } from "../errors/ResponseException";
 import authenticateToken, { TokenRequest } from "../middlewares/authHandler";
-import { projectListView, projectView } from "../views/projectView";
-import listProjectsIn from "../validation/projects/listProjectsIn";
-import newProjectIn from "../validation/projects/newProjectIn";
-import deleteProjectSchema from "../validation/projects/deleteProjectSchema";
-import updateProjectSchema from "../validation/projects/updateProjectSchema";
-import projectMemberIn from "../validation/projects/projectMemberSchema";
-import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
-import { userView } from "../views/userView";
-import getProjectSchema from "../validation/projects/getProjectSchema";
 import newTaskIn from "../validation/tasks/newTaskIn";
-import { taskView } from "../views/taskView";
+import { taskView, tasksListView } from "../views/taskView";
 import updateTaskIn from "../validation/tasks/updateTaskIn";
 import deleteTaskIn from "../validation/tasks/deleteTaskIn";
+import listTasksIn from "../validation/tasks/listTaskSchema";
+import { isOwnerOrMember } from "../services/projectService";
 
 const prisma = new PrismaClient()
 
@@ -103,28 +96,6 @@ controller.post(
     }
 )
 
-async function isOwnerOrMember(projectId: number, userId: number) {
-    const project = await prisma.project.findUnique({
-        where: {
-            id: projectId,
-            OR: [
-                {
-                    userOwnerId: userId
-                },
-                {
-                    members: {
-                        some: {
-                            userId: userId
-                        }
-                    }
-                }
-            ]
-        }
-    })
-
-    return !(project === null)
-}
-
 controller.put(
     "/:projectId/tasks/:taskId",
     checkSchema(updateTaskIn),
@@ -139,8 +110,7 @@ controller.put(
 
             const projectId = Number.parseInt(req.params.projectId)
 
-            if (!await isOwnerOrMember(userId, projectId))
-                throw new ResponseException("Only members or the owner of this project can edit tasks!", 401)
+            if (!(await isOwnerOrMember(projectId, userId))) throw new ResponseException("Not owner or member of project!", 403)
 
             const taskId = Number.parseInt(req.params.taskId)
 
@@ -239,155 +209,53 @@ controller.delete(
     }
 )
 
-// controller.get(
-//     "/:projectId",
-//     checkSchema(getProjectSchema),
-//     async (req: TokenRequest, res: Response, next: NextFunction) => {
-//         try {
-//             const errors = validationResult(req);
-//             if (!errors.isEmpty()) {
-//                 return res.status(400).json({ errors: errors.array() });
-//             }
+controller.get(
+    "/:projectId/tasks/",
+    checkSchema(listTasksIn),
+    async (req: TokenRequest, res: Response, next: NextFunction) => {
+        try {
+            const errors = validationResult(req);
+            if (!errors.isEmpty()) {
+                return res.status(400).json({ errors: errors.array() });
+            }
 
-//             const userId = Number.parseInt(req.claims.userId)
+            const userId = Number.parseInt(req.claims.userId)
 
-//             const projectId = Number.parseInt(req.params.projectId)
+            const projectId = Number.parseInt(req.params.projectId)
 
-//             // To see project info you need to be the owner or the member
-//             const project = await prisma.project.findUnique({
-//                 where: {
-//                     id: projectId,
-//                     OR: [
-//                         {
-//                             userOwnerId: userId
-//                         },
-//                         {
-//                             members: {
-//                                 some: {
-//                                     user: {
-//                                         id: userId
-//                                     }
-//                                 }
-//                             }
-//                         }
-//                     ]
-//                 },
-//                 include: {
-//                     owner: true,
-//                     members: {
-//                         include: {
-//                             user: true
-//                         }
-//                     },
-//                 }
-//             })
+            // To see task list you need to be the owner or the member
+            if (!isOwnerOrMember(projectId, userId)) throw new ResponseException("Not owner or member of project!", 403)
 
-//             if (!project) throw new ResponseException("Not owner or member of project!", 403)
+            const { status } = req.query
 
-//             res.status(200).send(projectView(project))
-//         } catch (error) {
-//             next(error)
-//         }
-//     }
-// )
+            const filters: any = {}
 
-// controller.post(
-//     "/:projectId/members/",
-//     checkSchema(projectMemberIn),
-//     async (req: TokenRequest, res: Response, next: NextFunction) => {
-//         const errors = validationResult(req);
-//         if (!errors.isEmpty()) {
-//             return res.status(400).json({ errors: errors.array() });
-//         }
+            if (status) {
+                filters.status = status
+            }
 
-//         try {
-//             const userId = Number.parseInt(req.claims.userId)
+            // const queryData = 
 
-//             const projectId = Number.parseInt(req.params.projectId)
+            const tasks = await prisma.task.findMany({
+                include: {
+                    assignedMember: true,
+                    tags: {
+                        select: {
+                            tag: true
+                        }
+                    }
+                },
+                where: {
+                    status: "done"
+                }
+            })
 
-//             const memberEmail = req.body.memberEmail
+            res.status(200).send(tasksListView(tasks))
+        } catch (error) {
+            next(error)
+        }
+    }
+)
 
-//             const user = await prisma.user.findUnique({
-//                 where: {
-//                     email: memberEmail
-//                 }
-//             })
-
-//             if (!user) {
-//                 throw new ResponseException(`User with email ${memberEmail} not found!`, 404)
-//             }
-
-//             let userToProject = await prisma.userToProject.create({
-//                 data: {
-//                     projectId: projectId,
-//                     userId: user.id
-//                 }
-//             })
-
-//             res.status(200).json(userView(user))
-//         } catch (error) {
-//             if (error instanceof PrismaClientKnownRequestError && error.code === "P2002") {
-//                 return next(new ResponseException("Member is already registered!", 400))
-//             }
-//             next(error)
-//         }
-//     }
-// )
-
-// controller.delete(
-//     "/:projectId/members/",
-//     checkSchema(projectMemberIn),
-//     async (req: TokenRequest, res: Response, next: NextFunction) => {
-//         const errors = validationResult(req);
-//         if (!errors.isEmpty()) {
-//             return res.status(400).json({ errors: errors.array() });
-//         }
-
-//         const projectId = Number.parseInt(req.params.projectId)
-
-//         const memberEmail = req.body.memberEmail
-
-//         try {
-//             const user = await prisma.user.findUnique({
-//                 where: {
-//                     email: memberEmail
-//                 }
-//             })
-
-//             if (!user) {
-//                 throw new ResponseException(`User with email ${memberEmail} not found!`, 404)
-//             }
-
-//             let userToProject = await prisma.userToProject.findUnique({
-//                 where: {
-//                     userId_projectId: {
-//                         projectId: projectId,
-//                         userId: user.id
-//                     }
-//                 }
-//             })
-
-//             if (!userToProject) {
-//                 throw new ResponseException(`Member with email ${memberEmail} not found!`, 404)
-//             }
-
-//             await prisma.userToProject.delete({
-//                 where: {
-//                     userId_projectId: {
-//                         projectId: projectId,
-//                         userId: user.id
-//                     }
-//                 }
-//             })
-
-//             res.status(200).json({ ok: "Removed member!" })
-//         } catch (error) {
-//             if (error instanceof PrismaClientKnownRequestError && error.code === "P2025") {
-//                 return next(new ResponseException("Member not found!", 404))
-//             }
-//             next(error)
-//         }
-//     }
-// )
 
 export default { controller, route } as Controller

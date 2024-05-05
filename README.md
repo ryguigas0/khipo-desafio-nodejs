@@ -24,6 +24,18 @@ Desenvolver uma API para gerenciar um sistema de tarefas e projetos, permitindo 
 - PostgreSQL
 - Prisma ORM
 
+## 🪄 Executando o projeto
+
+1. Clone o projeto
+2. `cd khipo-desafio-nodejs`
+
+### Versão para desenvolvimento
+
+1. `npm i`
+2. `npm run start`
+
+### Versão completa
+
 ## 📜 Requisitos:
 
 ### 1. Configuração Inicial:
