@@ -108,11 +108,10 @@ controller.delete(
 
       const projectId = Number.parseInt(req.params.projectId);
 
-      if (!(await isOwnerOrMember(userId, projectId)))
-        throw new ResponseException(
-          "Only members or the owner of this project can remove tasks!",
-          401
-        );
+      if (!(await isOwnerOrMember(userId, projectId))) throw new ResponseException(
+        "Only members or the owner of this project can remove tasks!",
+        403
+      );
 
       const taskId = Number.parseInt(req.params.taskId);
 
@@ -157,7 +156,7 @@ controller.get(
       const projectId = Number.parseInt(req.params.projectId);
 
       // To see task list you need to be the owner or the member
-      if (!isOwnerOrMember(projectId, userId))
+      if (!await isOwnerOrMember(projectId, userId))
         throw new ResponseException("Not owner or member of project!", 403);
 
       const { status } = req.query;
