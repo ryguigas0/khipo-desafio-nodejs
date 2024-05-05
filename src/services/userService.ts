@@ -30,6 +30,22 @@ export async function listUsers(): Promise<User[]> {
     return await prisma.user.findMany()
 }
 
+export async function validatePassword(email: string, password: string): Promise<User> {
+    let user = await prisma.user.findUnique({
+        where: {
+            email: email
+        }
+    })
+
+    if (!user) throw new ResponseException("User not found!", 404)
+
+    if (!await argon2.verify(user.hashPassword, password)) {
+        throw new ResponseException("Unauthenticated: wrong password", 401)
+    }
+
+    return user
+}
+
 export async function updateUser(userId: number, name?: string, email?: string, oldPassword?: string, newPassword?: string): Promise<User> {
     const user = await prisma.user.findUnique({
         where: {

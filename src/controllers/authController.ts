@@ -4,19 +4,16 @@ import { checkSchema, validationResult } from "express-validator";
 import tokenCredentials from "../validation/auth/TokenCredentials";
 import tokenView from "../views/tokenView"
 import { PrismaClient } from "@prisma/client";
-import argon2 from "argon2";
 import jwt from "jsonwebtoken"
 import authenticateToken, { TokenRequest } from "../middlewares/authHandler";
 
 import { jwtDuration, jwtSecret } from "../env";
-import { ResponseException } from "../errors/ResponseException";
+import { validatePassword } from "../services/userService";
 
 const prisma = new PrismaClient()
 
 const controller: Router = express.Router()
 const route = "/auth"
-
-
 
 controller.get('/token',
     checkSchema(tokenCredentials),
@@ -29,26 +26,14 @@ controller.get('/token',
         const { email, password } = req.body
 
         try {
-            let user = await prisma.user.findUnique({
-                where: {
-                    email: email
-                }
-            })
-
-            if (user === null) {
-                throw new ResponseException("User not found!", 404)
-            } else if (await argon2.verify(user.hashPassword, password)) {
-
-                let claims = {
-                    userId: user.id,
-                }
-
-                const accessToken = jwt.sign(claims, jwtSecret, { expiresIn: jwtDuration })
-
-                res.status(201).send(tokenView(accessToken, jwtDuration))
-            } else {
-                throw new ResponseException("Unauthenticated: wrong password", 401)
+            const user = await validatePassword(email, password)
+            let claims = {
+                userId: user.id,
             }
+
+            const accessToken = jwt.sign(claims, jwtSecret, { expiresIn: jwtDuration })
+
+            res.status(201).send(tokenView(accessToken, jwtDuration))
         } catch (error) {
             next(error)
         }
