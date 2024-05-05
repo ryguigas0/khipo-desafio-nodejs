@@ -153,28 +153,76 @@ export async function getTask(taskId: number): Promise<Task | null> {
   return task;
 }
 
-export async function listTasks(status?: string[] | string): Promise<Task[]> {
-  let filters: any = {};
+export async function listTasks(
+  status?: string[] | string,
+  tags?: string[] | string
+): Promise<Task[]> {
+  let statusFilters: any = {};
 
   if (status) {
     if (status instanceof Array) {
       let orAcc = [];
-      let filterValues = status instanceof Array ? status : [status];
 
-      for (let i = 0; i < filterValues.length; i++) {
-        const filterValue = filterValues[i];
+      for (let i = 0; i < status.length; i++) {
+        const filterValue = status[i];
 
         orAcc.push({
           status: filterValue
         });
       }
 
-      filters.OR = orAcc;
+      statusFilters.OR = orAcc;
     } else {
-      filters = {
-        status: status
+      statusFilters.status = status;
+    }
+  }
+
+  let tagFilters: any = {}
+  if (tags) {
+    if (tags instanceof Array) {
+      let orAcc = [];
+
+      for (let i = 0; i < tags.length; i++) {
+        const filterValue = tags[i];
+
+        orAcc.push({
+          tags: {
+            some: {
+              tag: {
+                title: {
+                  contains: filterValue
+                }
+              }
+            }
+          }
+        });
+      }
+
+      tagFilters.OR = orAcc;
+    } else {
+      tagFilters.tags = {
+        some: {
+          tag: {
+            title: {
+              contains: tags
+            }
+          }
+        }
       };
     }
+  }
+
+  let filters: any = {}
+
+  if (Object.keys(statusFilters).length > 0 && Object.keys(tagFilters).length > 0) {
+    filters.AND = [
+      statusFilters,
+      tagFilters
+    ]
+  } else if (Object.keys(statusFilters).length > 0) {
+    filters = statusFilters
+  } else if (Object.keys(tagFilters).length > 0) {
+    filters = tagFilters
   }
 
   const tasks = await prisma.task.findMany({

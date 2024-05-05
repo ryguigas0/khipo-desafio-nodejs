@@ -142,9 +142,12 @@ controller.get(
       if (!await isOwnerOrMember(projectId, userId))
         throw new ResponseException("Not owner or member of project!", 403);
 
-      const { status } = req.query;
+      const { status, tags } = req.query;
 
-      const tasks = await listTasks(status as string | string[] | undefined);
+      const tasks = await listTasks(
+        status as string | string[] | undefined,
+        tags as string | string[] | undefined
+      );
 
       res.status(200).send(tasksListView(tasks));
     } catch (error) {

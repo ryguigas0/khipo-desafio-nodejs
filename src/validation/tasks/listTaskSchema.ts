@@ -14,6 +14,11 @@ let listTasksIn: Schema = {
       options: [["done", "ongoing", "pending"]],
       errorMessage: "Task status is not 'done', 'ongoing' or 'pending'"
     }
+  },
+  "tags.*": {
+    in: ["query"],
+    optional: true,
+    isString: true
   }
 };
 
