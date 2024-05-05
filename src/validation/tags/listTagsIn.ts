@@ -1,28 +1,28 @@
-import { Schema } from "express-validator"
+import { Schema } from "express-validator";
 
 let listTagsSchema: Schema = {
-    projectId: {
-        in: ["params"],
-        notEmpty: {
-            errorMessage: "No project ID provided!"
-        },
-        isInt: {
-            options: {
-                min: 0
-            }
-        }
+  projectId: {
+    in: ["params"],
+    notEmpty: {
+      errorMessage: "No project ID provided!"
     },
-    taskId: {
-        in: ["params"],
-        notEmpty: {
-            errorMessage: "No task ID provided!"
-        },
-        isInt: {
-            options: {
-                min: 0
-            }
-        }
+    isInt: {
+      options: {
+        min: 0
+      }
     }
-}
+  },
+  taskId: {
+    in: ["params"],
+    notEmpty: {
+      errorMessage: "No task ID provided!"
+    },
+    isInt: {
+      options: {
+        min: 0
+      }
+    }
+  }
+};
 
-export default listTagsSchema
+export default listTagsSchema;

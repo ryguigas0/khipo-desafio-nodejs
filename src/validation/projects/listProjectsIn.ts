@@ -1,24 +1,24 @@
-import { Schema } from "express-validator"
+import { Schema } from "express-validator";
 
 let listProjectsIn: Schema = {
-    owned: {
-        in: ["query"],
-        optional: true,
-        isBoolean: {
-            options: {
-                strict: true
-            }
-        }
-    },
-    member: {
-        in: ["query"],
-        optional: true,
-        isBoolean: {
-            options: {
-                strict: true
-            }
-        }
-    },
-}
+  owned: {
+    in: ["query"],
+    optional: true,
+    isBoolean: {
+      options: {
+        strict: true
+      }
+    }
+  },
+  member: {
+    in: ["query"],
+    optional: true,
+    isBoolean: {
+      options: {
+        strict: true
+      }
+    }
+  }
+};
 
-export default listProjectsIn
+export default listProjectsIn;

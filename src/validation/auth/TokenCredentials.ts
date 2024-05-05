@@ -1,22 +1,22 @@
-import { Schema } from "express-validator"
+import { Schema } from "express-validator";
 
 let tokenCredentials: Schema = {
-    email: {
-        in: ["body"],
-        errorMessage: "Invalid email",
-        notEmpty: {
-            errorMessage: "No email provided"
-        },
-        isEmail: {
-            errorMessage: "Invalid email"
-        }
+  email: {
+    in: ["body"],
+    errorMessage: "Invalid email",
+    notEmpty: {
+      errorMessage: "No email provided"
     },
-    password: {
-        in: ["body"],
-        notEmpty: {
-            errorMessage: "No password was provided"
-        }
+    isEmail: {
+      errorMessage: "Invalid email"
     }
-}
+  },
+  password: {
+    in: ["body"],
+    notEmpty: {
+      errorMessage: "No password was provided"
+    }
+  }
+};
 
-export default tokenCredentials
+export default tokenCredentials;

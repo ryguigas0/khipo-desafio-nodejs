@@ -1,12 +1,12 @@
-import { Schema } from "express-validator"
+import { Schema } from "express-validator";
 
 let getProjectSchema: Schema = {
-    projectId: {
-        in: ["params"],
-        notEmpty: {
-            errorMessage: "Project ID not provided"
-        }
+  projectId: {
+    in: ["params"],
+    notEmpty: {
+      errorMessage: "Project ID not provided"
     }
-}
+  }
+};
 
-export default getProjectSchema
+export default getProjectSchema;

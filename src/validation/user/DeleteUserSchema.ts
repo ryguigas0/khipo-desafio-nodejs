@@ -1,12 +1,12 @@
-import { Schema } from "express-validator"
+import { Schema } from "express-validator";
 
 let deleteUserSchema: Schema = {
-    userId: {
-        in: ["params"],
-        notEmpty: {
-            errorMessage: "User ID not provided"
-        }
+  userId: {
+    in: ["params"],
+    notEmpty: {
+      errorMessage: "User ID not provided"
     }
-}
+  }
+};
 
-export default deleteUserSchema
+export default deleteUserSchema;
