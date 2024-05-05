@@ -1,6 +1,6 @@
 import { Schema } from "express-validator";
 
-let newProjectIn: Schema = {
+let newProjectSchema: Schema = {
   name: {
     in: ["body"],
     notEmpty: true
@@ -13,4 +13,4 @@ let newProjectIn: Schema = {
   }
 };
 
-export default newProjectIn;
+export default newProjectSchema;

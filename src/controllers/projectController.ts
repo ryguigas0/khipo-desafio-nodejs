@@ -4,8 +4,8 @@ import { Controller } from "./controllerInterface";
 import { checkSchema, validationResult } from "express-validator";
 import authenticateToken, { TokenRequest } from "../middlewares/authHandler";
 import { projectListView, projectView } from "../views/projectView";
-import listProjectsIn from "../validation/projects/listProjectsIn";
-import newProjectIn from "../validation/projects/newProjectIn";
+import listProjectsSchema from "../validation/projects/listProjectsSchema";
+import newProjectSchema from "../validation/projects/newProjectSchema";
 import deleteProjectSchema from "../validation/projects/deleteProjectSchema";
 import updateProjectSchema from "../validation/projects/updateProjectSchema";
 import getProjectSchema from "../validation/projects/getProjectSchema";
@@ -25,7 +25,7 @@ controller.use(authenticateToken);
 
 controller.post(
   "/",
-  checkSchema(newProjectIn),
+  checkSchema(newProjectSchema),
   async (req: TokenRequest, res: Response, next: NextFunction) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -123,7 +123,7 @@ controller.get(
 
 controller.get(
   "/",
-  checkSchema(listProjectsIn),
+  checkSchema(listProjectsSchema),
   async (req: TokenRequest, res: Response) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {

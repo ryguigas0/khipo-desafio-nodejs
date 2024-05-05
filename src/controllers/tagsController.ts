@@ -5,16 +5,16 @@ import { ResponseException } from "../errors/ResponseException";
 import authenticateToken, { TokenRequest } from "../middlewares/authHandler";
 import { isOwnerOrMember } from "../services/projectService";
 import { getTask, hasTag } from "../services/taskService";
-import newTagSchema from "../validation/tags/newTagIn";
+import newTagSchema from "../validation/tags/newTagSchema";
 import {
   createTag,
   deleteTag,
   listTags,
   updateTag
 } from "../services/tagService";
-import listTagsSchema from "../validation/tags/listTagsIn";
-import deleteTagIn from "../validation/tags/deleteTagIn";
-import updateTagSchema from "../validation/tags/updateTagIn";
+import listTagsSchema from "../validation/tags/listTagsSchema";
+import deleteTagSchema from "../validation/tags/deleteTagSchema";
+import updateTagSchema from "../validation/tags/updateTagSchema";
 
 const controller: Router = express.Router();
 const route = "/projects";
@@ -100,7 +100,7 @@ controller.put(
 
 controller.delete(
   "/:projectId/tasks/:taskId/tags/:tagId",
-  checkSchema(deleteTagIn),
+  checkSchema(deleteTagSchema),
   async (req: TokenRequest, res: Response, next: NextFunction) => {
     try {
       const errors = validationResult(req);

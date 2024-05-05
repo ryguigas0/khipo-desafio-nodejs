@@ -1,6 +1,6 @@
 import { Schema } from "express-validator";
 
-let listProjectsIn: Schema = {
+let listProjectsSchema: Schema = {
   owned: {
     in: ["query"],
     optional: true,
@@ -21,4 +21,4 @@ let listProjectsIn: Schema = {
   }
 };
 
-export default listProjectsIn;
+export default listProjectsSchema;

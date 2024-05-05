@@ -4,10 +4,10 @@ import { Controller } from "./controllerInterface";
 import { checkSchema, validationResult } from "express-validator";
 import { ResponseException } from "../errors/ResponseException";
 import authenticateToken, { TokenRequest } from "../middlewares/authHandler";
-import newTaskIn from "../validation/tasks/newTaskIn";
+import newTaskSchema from "../validation/tasks/newTaskSchema";
 import { taskView, tasksListView } from "../views/taskView";
-import updateTaskIn from "../validation/tasks/updateTaskIn";
-import deleteTaskIn from "../validation/tasks/deleteTaskIn";
+import updateTaskSchema from "../validation/tasks/updateTaskSchema";
+import deleteTaskSchema from "../validation/tasks/deleteTaskSchema";
 import listTasksIn from "../validation/tasks/listTaskSchema";
 import { isOwnerOrMember } from "../services/projectService";
 import { createTask, deleteTask, listTasks, updateTask } from "../services/taskService";
@@ -19,7 +19,7 @@ controller.use(authenticateToken);
 
 controller.post(
   "/:projectId/tasks/",
-  checkSchema(newTaskIn),
+  checkSchema(newTaskSchema),
   async (req: TokenRequest, res: Response, next: NextFunction) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -57,7 +57,7 @@ controller.post(
 
 controller.put(
   "/:projectId/tasks/:taskId",
-  checkSchema(updateTaskIn),
+  checkSchema(updateTaskSchema),
   async (req: TokenRequest, res: Response, next: NextFunction) => {
     try {
       const errors = validationResult(req);
@@ -94,7 +94,7 @@ controller.put(
 
 controller.delete(
   "/:projectId/tasks/:taskId",
-  checkSchema(deleteTaskIn),
+  checkSchema(deleteTaskSchema),
   async (req: TokenRequest, res: Response, next: NextFunction) => {
     try {
       const errors = validationResult(req);

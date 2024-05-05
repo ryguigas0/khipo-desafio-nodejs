@@ -1,6 +1,6 @@
 import { Schema } from "express-validator";
 
-let projectMemberIn: Schema = {
+let memberSchema: Schema = {
   projectId: {
     in: ["params"],
     notEmpty: true
@@ -12,4 +12,4 @@ let projectMemberIn: Schema = {
   }
 };
 
-export default projectMemberIn;
+export default memberSchema;

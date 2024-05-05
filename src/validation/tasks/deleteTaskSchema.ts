@@ -1,6 +1,6 @@
 import { Schema } from "express-validator";
 
-let deleteTaskIn: Schema = {
+let deleteTaskSchema: Schema = {
   projectId: {
     in: ["params"],
     notEmpty: {
@@ -15,4 +15,4 @@ let deleteTaskIn: Schema = {
   }
 };
 
-export default deleteTaskIn;
+export default deleteTaskSchema;

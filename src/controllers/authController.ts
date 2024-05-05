@@ -1,7 +1,7 @@
 import express, { Router, Request, Response, NextFunction } from "express";
 import { Controller } from "./controllerInterface";
 import { checkSchema, validationResult } from "express-validator";
-import tokenCredentials from "../validation/auth/TokenCredentials";
+import tokenCredentialsSchema from "../validation/auth/tokenCredentialsSchema";
 import tokenView from "../views/tokenView";
 import { PrismaClient } from "@prisma/client";
 import jwt from "jsonwebtoken";
@@ -15,7 +15,7 @@ const route = "/auth";
 
 controller.get(
   "/token",
-  checkSchema(tokenCredentials),
+  checkSchema(tokenCredentialsSchema),
   async (req: Request, res: Response, next: NextFunction) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {

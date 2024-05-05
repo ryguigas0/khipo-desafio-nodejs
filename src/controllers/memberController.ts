@@ -4,7 +4,7 @@ import { Controller } from "./controllerInterface";
 import { checkSchema, validationResult } from "express-validator";
 import { ResponseException } from "../errors/ResponseException";
 import authenticateToken, { TokenRequest } from "../middlewares/authHandler";
-import projectMemberIn from "../validation/projects/projectMemberSchema";
+import memberSchema from "../validation/members/memberSchema";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 import { userListView, userView } from "../views/userView";
 import {
@@ -21,7 +21,7 @@ controller.use(authenticateToken);
 
 controller.post(
   "/:projectId/members/",
-  checkSchema(projectMemberIn),
+  checkSchema(memberSchema),
   async (req: TokenRequest, res: Response, next: NextFunction) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -60,7 +60,7 @@ controller.post(
 
 controller.delete(
   "/:projectId/members/",
-  checkSchema(projectMemberIn),
+  checkSchema(memberSchema),
   async (req: TokenRequest, res: Response, next: NextFunction) => {
     try {
       const errors = validationResult(req);

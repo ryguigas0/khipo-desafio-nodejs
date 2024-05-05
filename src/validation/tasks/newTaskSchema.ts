@@ -1,21 +1,14 @@
 import { Schema } from "express-validator";
 
-let updateTaskIn: Schema = {
+let newTaskSchema: Schema = {
   projectId: {
     in: ["params"],
     notEmpty: {
       errorMessage: "Project ID not provided"
     }
   },
-  taskId: {
-    in: ["params"],
-    notEmpty: {
-      errorMessage: "Task ID not provided"
-    }
-  },
   title: {
     in: ["body"],
-    optional: true,
     notEmpty: {
       errorMessage: "Missing task name"
     },
@@ -44,14 +37,11 @@ let updateTaskIn: Schema = {
       }
     }
   },
-  status: {
+  "tags.*": {
     optional: true,
-    in: ["body"],
-    isIn: {
-      options: [["done", "ongoing", "pending"]],
-      errorMessage: "Task status is not 'done', 'ongoing' or 'pending'"
-    }
+    notEmpty: true,
+    isString: true
   }
 };
 
-export default updateTaskIn;
+export default newTaskSchema;

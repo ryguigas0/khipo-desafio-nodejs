@@ -1,6 +1,6 @@
 import { Schema } from "express-validator";
 
-let deleteTagIn: Schema = {
+let deleteTagSchema: Schema = {
   projectId: {
     in: ["params"],
     notEmpty: {
@@ -21,4 +21,4 @@ let deleteTagIn: Schema = {
   }
 };
 
-export default deleteTagIn;
+export default deleteTagSchema;

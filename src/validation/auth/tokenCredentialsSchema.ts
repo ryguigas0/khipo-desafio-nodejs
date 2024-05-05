@@ -1,6 +1,6 @@
 import { Schema } from "express-validator";
 
-let tokenCredentials: Schema = {
+let tokenCredentialsSchema: Schema = {
   email: {
     in: ["body"],
     errorMessage: "Invalid email",
@@ -19,4 +19,4 @@ let tokenCredentials: Schema = {
   }
 };
 
-export default tokenCredentials;
+export default tokenCredentialsSchema;
