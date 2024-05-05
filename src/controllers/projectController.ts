@@ -13,6 +13,7 @@ import {
   createProject,
   deleteProject,
   getProject,
+  listProjects,
   updateProject
 } from "../services/projectService";
 
@@ -130,33 +131,10 @@ controller.get(
       return res.status(400).json({ errors: errors.array() });
     }
 
-    const { userId } = req.claims;
-    const { owned, member } = req.query;
+    const userId = Number.parseInt(req.claims.userId);
+    const { name } = req.query;
 
-    const projects = await prisma.project.findMany({
-      where: {
-        OR: [
-          {
-            userOwnerId: userId
-          },
-          {
-            members: {
-              some: {
-                userId: userId
-              }
-            }
-          }
-        ]
-      },
-      include: {
-        owner: true
-        // members: {
-        //     include: {
-        //         user: true
-        //     }
-        // },
-      }
-    });
+    const projects = await listProjects(userId, name as string)
 
     res.status(200).json(projectListView(projects));
   }

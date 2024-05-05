@@ -23,6 +23,59 @@ export async function createProject(
   return projModel;
 }
 
+export async function listProjects(userId: number, name?: string): Promise<Project[]> {
+  let nameFilter = {}
+
+  if (name) {
+    nameFilter = {
+      name: {
+        contains: name
+      }
+    }
+  }
+
+  let ownerOrMemberFilter: any = {
+    OR: [
+      {
+        members: {
+          some: {
+            userId: userId
+          }
+        }
+      },
+      {
+        userOwnerId: userId
+      }
+    ]
+  }
+
+  let filters: any = {}
+
+  if (Object.keys(nameFilter).length > 0) {
+    filters = {
+      AND: [
+        nameFilter, ownerOrMemberFilter
+      ]
+    }
+  } else {
+    filters = ownerOrMemberFilter
+  }
+
+  const projects = await prisma.project.findMany({
+    where: filters,
+    include: {
+      owner: true,
+      members: {
+        include: {
+          user: true
+        }
+      }
+    }
+  })
+
+  return projects
+}
+
 export async function updateProject(
   userOwnerId: number,
   projectId: number,
