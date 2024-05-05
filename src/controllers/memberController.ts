@@ -62,24 +62,24 @@ controller.delete(
   "/:projectId/members/",
   checkSchema(projectMemberIn),
   async (req: TokenRequest, res: Response, next: NextFunction) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
-    }
-
-    const userId = Number.parseInt(req.claims.userId);
-
-    const projectId = Number.parseInt(req.params.projectId);
-
-    if (!(await isOwner(projectId, userId)))
-      throw new ResponseException(
-        "Only project owners can remove members!",
-        404
-      );
-
-    const memberEmail = req.body.memberEmail;
-
     try {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
+      }
+
+      const userId = Number.parseInt(req.claims.userId);
+
+      const projectId = Number.parseInt(req.params.projectId);
+
+      if (!(await isOwner(projectId, userId)))
+        throw new ResponseException(
+          "Only project owners can remove members!",
+          404
+        );
+
+      const memberEmail = req.body.memberEmail;
+
       await removeMember(memberEmail, projectId);
 
       res.status(200).json({ ok: "Removed member!" });
@@ -98,22 +98,22 @@ controller.delete(
 controller.get(
   "/:projectId/members/",
   async (req: TokenRequest, res: Response, next: NextFunction) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
-    }
-
-    const userId = Number.parseInt(req.claims.userId);
-
-    const projectId = Number.parseInt(req.params.projectId);
-
-    if (!(await isOwnerOrMember(projectId, userId)))
-      throw new ResponseException(
-        "Only owners or members can see member list!",
-        403
-      );
-
     try {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
+      }
+
+      const userId = Number.parseInt(req.claims.userId);
+
+      const projectId = Number.parseInt(req.params.projectId);
+
+      if (!(await isOwnerOrMember(projectId, userId)))
+        throw new ResponseException(
+          "Only owners or members can see member list!",
+          403
+        );
+
       const members = await listMembers(projectId);
 
       res.status(200).json(userListView(members));
