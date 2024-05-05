@@ -4,7 +4,12 @@
 
 # Desafio Backend | NodeJS
 
-Olá, candidato! Se você chegou até aqui, é porque demonstrou interesse em fazer parte do nosso time. Preparamos um desafio para entendermos um pouco mais sobre suas habilidades como desenvolvedor backend em NodeJS.
+## 💻 Como rodar o projeto
+
+1. Clone o projeto
+2. `cd khipo-desafio-nodejs`
+3. `docker compose up` e aguarde printar `[server]: server running at 0.0.0.0:4000`
+4. Abra a coleção de requisições `Insomnia_2024-05-05.json` no seu [Insomnia](https://insomnia.rest/)
 
 ## 🚀 Objetivo:
 
@@ -24,61 +29,51 @@ Desenvolver uma API para gerenciar um sistema de tarefas e projetos, permitindo 
 - PostgreSQL
 - Prisma ORM
 
-## 🪄 Executando o projeto
-
-1. Clone o projeto
-2. `cd khipo-desafio-nodejs`
-
-### Versão para desenvolvimento
-
-1. `npm i`
-2. `npm run start`
-
 ### Versão completa
 
 ## 📜 Requisitos:
 
-### 1. Configuração Inicial:
+### 1. Configuração Inicial: (FEITO)
 
-- Configurar um projeto usando Node.js e TypeScript.
-- Configurar um banco de dados PostgreSQL (Local).
-- Utilizar o Prisma como ORM.
+- [x] Configurar um projeto usando Node.js e TypeScript.
+- [x] Configurar um banco de dados PostgreSQL (Local).
+- [x] Utilizar o Prisma como ORM.
 
-### 2. Modelo de Dados:
+### 2. Modelo de Dados: (FEITO)
 
-#### Usuário (`User`):
+#### Usuário (`User`): (FEITO)
 
-- ID: ID gerado automaticamente.
-- Nome: Texto.
-- Email: Texto, único.
-- Senha: Texto, encriptada.
+- [x] ID: ID gerado automaticamente.
+- [x] Nome: Texto.
+- [x] Email: Texto, único.
+- [x] Senha: Texto, encriptada.
 
-#### Projeto (`Project`):
+#### Projeto (`Project`): (FEITO)
 
-- ID: ID gerado automaticamente.
-- Nome: Texto.
-- Descrição: Texto.
-- Membros: Lista de usuários associados ao projeto.
+- [x] ID: ID gerado automaticamente.
+- [x] Nome: Texto.
+- [x] Descrição: Texto.
+- [x] Membros: Lista de usuários associados ao projeto.
 
-#### Tarefa (`Task`):
+#### Tarefa (`Task`): (FEITO)
 
-- ID: ID gerado automaticamente.
-- Título: Texto, máximo de 255 caracteres.
-- Descrição: Texto.
-- Data de criação: Data e hora, gerada automaticamente.
-- Status: Enum (Pendente, Em andamento, Concluída).
-- Projeto: Referência ao projeto ao qual pertence.
+- [x] ID: ID gerado automaticamente.
+- [x] Título: Texto, máximo de 255 caracteres.
+- [x] Descrição: Texto.
+- [x] Data de criação: Data e hora, gerada automaticamente.
+- [x] Status: Enum (Pendente, Em andamento, Concluída).
+- [x] Projeto: Referência ao projeto ao qual pertence.
 
-#### Tag (`Tag`):
+#### Tag (`Tag`): (FEITO)
 
-- ID: ID gerado automaticamente.
-- Título: Texto.
-- Tarefa: Referência a tarefa ao qual pertence.
+- [x] ID: ID gerado automaticamente.
+- [x] Título: Texto.
+- [x] Tarefa: Referência a tarefa ao qual pertence.
 
-### 4. Validações e Erros:
+### 4. Validações e Erros: (FEITO)
 
-- Implemente validações para garantir a integridade dos dados.
-- Responda com mensagens de erro claras e status HTTP apropriados.
+- [x] Implemente validações para garantir a integridade dos dados.
+- [x] Responda com mensagens de erro claras e status HTTP apropriados.
 
 ## 🥇 Diferenciais:
 
@@ -86,8 +81,8 @@ Desenvolver uma API para gerenciar um sistema de tarefas e projetos, permitindo 
 - Documentação com Swagger.
 - Paginação nos endpoints.
 - Registro de logs.
-- Dockerização da aplicação.
-- Uso de um linter (como ESLint) e formatador de código (como Prettier).
+- [x] Dockerização da aplicação.
+- [x] Uso de um linter (como ESLint) e formatador de código (como Prettier).
 
 ## 🗳️ Instruções de Submissão:
 
