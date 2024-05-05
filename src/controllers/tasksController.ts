@@ -10,9 +10,7 @@ import updateTaskIn from "../validation/tasks/updateTaskIn";
 import deleteTaskIn from "../validation/tasks/deleteTaskIn";
 import listTasksIn from "../validation/tasks/listTaskSchema";
 import { isOwnerOrMember } from "../services/projectService";
-import { createTask, listTasks, updateTask } from "../services/taskService";
-
-const prisma = new PrismaClient();
+import { createTask, deleteTask, listTasks, updateTask } from "../services/taskService";
 
 const controller: Router = express.Router();
 const route = "/projects";
@@ -108,29 +106,14 @@ controller.delete(
 
       const projectId = Number.parseInt(req.params.projectId);
 
-      if (!(await isOwnerOrMember(userId, projectId))) throw new ResponseException(
+      if (!(await isOwnerOrMember(projectId, userId))) throw new ResponseException(
         "Only members or the owner of this project can remove tasks!",
         403
       );
 
       const taskId = Number.parseInt(req.params.taskId);
 
-      const task = await prisma.task.findUnique({
-        where: {
-          id: taskId
-        }
-      });
-
-      if (!task) throw new ResponseException("Task not found!", 404);
-
-      if (task.status === "done")
-        throw new ResponseException("Cannot edit done tasks!", 401);
-
-      await prisma.task.delete({
-        where: {
-          id: taskId
-        }
-      });
+      await deleteTask(taskId)
 
       res.status(200).json({
         ok: "Deleted task!"

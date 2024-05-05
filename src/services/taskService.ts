@@ -122,6 +122,27 @@ export async function updateTask(
   }
 }
 
+export async function deleteTask(taskId: number): Promise<boolean> {
+  const task = await prisma.task.findUnique({
+    where: {
+      id: taskId
+    }
+  });
+
+  if (!task) throw new ResponseException("Task not found!", 404);
+
+  if (task.status === "done")
+    throw new ResponseException("Cannot edit done tasks!", 401);
+
+  await prisma.task.delete({
+    where: {
+      id: taskId
+    }
+  });
+
+  return true
+}
+
 export async function getTask(taskId: number): Promise<Task | null> {
   const task = await prisma.task.findUnique({
     where: {

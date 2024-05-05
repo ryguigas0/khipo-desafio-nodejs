@@ -120,7 +120,7 @@ export async function getProject(
   return project;
 }
 
-export async function isOwner(projectId: number, userId: number) {
+export async function isOwner(projectId: number, userId: number): Promise<boolean> {
   const project = await prisma.project.findUnique({
     where: {
       id: projectId,
@@ -131,27 +131,21 @@ export async function isOwner(projectId: number, userId: number) {
   return !(project === null);
 }
 
-export async function isOwnerOrMember(projectId: number, userId: number) {
+export async function isMember(projectId: number, userId: number): Promise<boolean> {
   const project = await prisma.project.findUnique({
     where: {
       id: projectId,
-      OR: [
-        {
-          userOwnerId: userId
-        },
-        {
-          NOT: {
-            members: {
-              none: {
-                projectId: projectId,
-                userId: userId
-              }
-            }
-          }
+      members: {
+        some: {
+          userId: userId
         }
-      ]
+      }
     }
-  });
+  })
 
-  return !(project === null);
+  return !(project === null)
+}
+
+export async function isOwnerOrMember(projectId: number, userId: number) {
+  return await isOwner(projectId, userId) || await isMember(projectId, userId);
 }
