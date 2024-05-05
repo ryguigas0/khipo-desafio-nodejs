@@ -13,7 +13,7 @@ import projectMemberIn from "../validation/projects/projectMemberSchema";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 import { userView } from "../views/userView";
 import getProjectSchema from "../validation/projects/getProjectSchema";
-import { isOwnerOrMember } from "../services/projectService";
+import { createProject, deleteProject, getProject, isOwnerOrMember, updateProject } from "../services/projectService";
 
 const prisma = new PrismaClient()
 
@@ -34,20 +34,9 @@ controller.post(
         const { userId: userOwnerId } = req.claims
         const { name, description } = req.body
 
-        let newProjectData: any = {
-            name: name,
-            userOwnerId: userOwnerId
-        }
-
-        if (description) {
-            newProjectData.description = description
-        }
-
 
         try {
-            const projModel = await prisma.project.create({
-                data: newProjectData,
-            })
+            const projModel = await createProject(userOwnerId, name, description)
 
             res.status(200).json(projectView(projModel))
         } catch (error) {
@@ -70,40 +59,11 @@ controller.put(
 
             const projectId = Number.parseInt(req.params.projectId)
 
-            const project = await prisma.project.findUnique({
-                where: {
-                    id: projectId,
-                    userOwnerId: userOwnerId
-                }
-            })
-
-            // Not owners cannot edit project
-            if (!project) throw new ResponseException("Not owner of project or project was not created!", 404)
-
             const { name, description } = req.body
 
-            let updateData: any = {}
+            const updatedProject = await updateProject(userOwnerId, projectId, name, description)
 
-            if (name) {
-                updateData.name = name
-            }
-
-            if (description) {
-                updateData.description = description
-            }
-
-            if (Object.keys(updateData).length > 0) {
-                const updatedProject = await prisma.project.update({
-                    where: {
-                        id: projectId
-                    },
-                    data: updateData
-                })
-
-                res.status(200).send(projectView(updatedProject))
-            } else {
-                throw new ResponseException("No update data provided!", 400)
-            }
+            res.status(200).send(projectView(updatedProject))
         } catch (error) {
             next(error)
         }
@@ -124,21 +84,7 @@ controller.delete(
 
             const projectId = Number.parseInt(req.params.projectId)
 
-            const project = await prisma.project.findUnique({
-                where: {
-                    id: projectId,
-                    userOwnerId: userOwnerId
-                }
-            })
-
-            // Not owners cannot edit project
-            if (!project) throw new ResponseException("Not owner of project or project was not created!", 404)
-
-            await prisma.project.delete({
-                where: {
-                    id: projectId
-                }
-            })
+            await deleteProject(userOwnerId, projectId)
 
             res.status(200).send({ ok: "Deleted project!" })
         } catch (error) {
@@ -161,25 +107,7 @@ controller.get(
 
             const projectId = Number.parseInt(req.params.projectId)
 
-            // To see project info you need to be the owner or the member
-            if (!(await isOwnerOrMember(projectId, userId))) throw new ResponseException("Not owner or member of project!", 403)
-
-            const project = await prisma.project.findUnique({
-                where: {
-                    id: projectId,
-                },
-                include: {
-                    owner: true,
-                    members: {
-                        select: {
-                            user: true
-                        }
-                    },
-                    tasks: true
-                }
-            })
-
-            if (!project) throw new ResponseException("Project not found!", 404)
+            const project = await getProject(projectId, userId)
 
             res.status(200).send(projectView(project))
         } catch (error) {

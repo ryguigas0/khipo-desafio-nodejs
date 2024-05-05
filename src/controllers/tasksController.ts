@@ -11,7 +11,6 @@ import deleteTaskIn from "../validation/tasks/deleteTaskIn";
 import listTasksIn from "../validation/tasks/listTaskSchema";
 import { isOwnerOrMember } from "../services/projectService";
 import { createTask, listTasks, updateTask } from "../services/taskService";
-import { UnknownFieldInstance } from "express-validator/src/base";
 
 const prisma = new PrismaClient()
 
