@@ -3,7 +3,6 @@ import { Controller } from "./controllerInterface";
 import { checkSchema, validationResult } from "express-validator";
 import tokenCredentialsSchema from "../validation/auth/tokenCredentialsSchema";
 import tokenView from "../views/tokenView";
-import { PrismaClient } from "@prisma/client";
 import jwt from "jsonwebtoken";
 import authenticateToken, { TokenRequest } from "../middlewares/authHandler";
 

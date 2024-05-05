@@ -10,7 +10,12 @@ import updateTaskSchema from "../validation/tasks/updateTaskSchema";
 import deleteTaskSchema from "../validation/tasks/deleteTaskSchema";
 import listTasksIn from "../validation/tasks/listTaskSchema";
 import { isOwnerOrMember } from "../services/projectService";
-import { createTask, deleteTask, listTasks, updateTask } from "../services/taskService";
+import {
+  createTask,
+  deleteTask,
+  listTasks,
+  updateTask
+} from "../services/taskService";
 
 const controller: Router = express.Router();
 const route = "/projects";
@@ -106,14 +111,15 @@ controller.delete(
 
       const projectId = Number.parseInt(req.params.projectId);
 
-      if (!(await isOwnerOrMember(projectId, userId))) throw new ResponseException(
-        "Only members or the owner of this project can remove tasks!",
-        403
-      );
+      if (!(await isOwnerOrMember(projectId, userId)))
+        throw new ResponseException(
+          "Only members or the owner of this project can remove tasks!",
+          403
+        );
 
       const taskId = Number.parseInt(req.params.taskId);
 
-      await deleteTask(taskId)
+      await deleteTask(taskId);
 
       res.status(200).json({
         ok: "Deleted task!"
@@ -139,7 +145,7 @@ controller.get(
       const projectId = Number.parseInt(req.params.projectId);
 
       // To see task list you need to be the owner or the member
-      if (!await isOwnerOrMember(projectId, userId))
+      if (!(await isOwnerOrMember(projectId, userId)))
         throw new ResponseException("Not owner or member of project!", 403);
 
       const { status, tags } = req.query;

@@ -23,15 +23,18 @@ export async function createProject(
   return projModel;
 }
 
-export async function listProjects(userId: number, name?: string): Promise<Project[]> {
-  let nameFilter = {}
+export async function listProjects(
+  userId: number,
+  name?: string
+): Promise<Project[]> {
+  let nameFilter = {};
 
   if (name) {
     nameFilter = {
       name: {
         contains: name
       }
-    }
+    };
   }
 
   let ownerOrMemberFilter: any = {
@@ -47,18 +50,16 @@ export async function listProjects(userId: number, name?: string): Promise<Proje
         userOwnerId: userId
       }
     ]
-  }
+  };
 
-  let filters: any = {}
+  let filters: any = {};
 
   if (Object.keys(nameFilter).length > 0) {
     filters = {
-      AND: [
-        nameFilter, ownerOrMemberFilter
-      ]
-    }
+      AND: [nameFilter, ownerOrMemberFilter]
+    };
   } else {
-    filters = ownerOrMemberFilter
+    filters = ownerOrMemberFilter;
   }
 
   const projects = await prisma.project.findMany({
@@ -71,9 +72,9 @@ export async function listProjects(userId: number, name?: string): Promise<Proje
         }
       }
     }
-  })
+  });
 
-  return projects
+  return projects;
 }
 
 export async function updateProject(
@@ -173,7 +174,10 @@ export async function getProject(
   return project;
 }
 
-export async function isOwner(projectId: number, userId: number): Promise<boolean> {
+export async function isOwner(
+  projectId: number,
+  userId: number
+): Promise<boolean> {
   const project = await prisma.project.findUnique({
     where: {
       id: projectId,
@@ -184,7 +188,10 @@ export async function isOwner(projectId: number, userId: number): Promise<boolea
   return !(project === null);
 }
 
-export async function isMember(projectId: number, userId: number): Promise<boolean> {
+export async function isMember(
+  projectId: number,
+  userId: number
+): Promise<boolean> {
   const project = await prisma.project.findUnique({
     where: {
       id: projectId,
@@ -194,11 +201,13 @@ export async function isMember(projectId: number, userId: number): Promise<boole
         }
       }
     }
-  })
+  });
 
-  return !(project === null)
+  return !(project === null);
 }
 
 export async function isOwnerOrMember(projectId: number, userId: number) {
-  return await isOwner(projectId, userId) || await isMember(projectId, userId);
+  return (
+    (await isOwner(projectId, userId)) || (await isMember(projectId, userId))
+  );
 }

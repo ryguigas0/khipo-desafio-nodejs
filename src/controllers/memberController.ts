@@ -1,5 +1,4 @@
 import express, { Router, Response, NextFunction } from "express";
-import { PrismaClient } from "@prisma/client";
 import { Controller } from "./controllerInterface";
 import { checkSchema, validationResult } from "express-validator";
 import { ResponseException } from "../errors/ResponseException";

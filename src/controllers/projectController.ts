@@ -17,8 +17,6 @@ import {
   updateProject
 } from "../services/projectService";
 
-const prisma = new PrismaClient();
-
 const controller: Router = express.Router();
 const route = "/projects";
 
@@ -134,7 +132,7 @@ controller.get(
     const userId = Number.parseInt(req.claims.userId);
     const { name } = req.query;
 
-    const projects = await listProjects(userId, name as string)
+    const projects = await listProjects(userId, name as string);
 
     res.status(200).json(projectListView(projects));
   }

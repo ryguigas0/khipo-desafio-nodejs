@@ -140,7 +140,7 @@ export async function deleteTask(taskId: number): Promise<boolean> {
     }
   });
 
-  return true
+  return true;
 }
 
 export async function getTask(taskId: number): Promise<Task | null> {
@@ -177,7 +177,7 @@ export async function listTasks(
     }
   }
 
-  let tagFilters: any = {}
+  let tagFilters: any = {};
   if (tags) {
     if (tags instanceof Array) {
       let orAcc = [];
@@ -212,17 +212,17 @@ export async function listTasks(
     }
   }
 
-  let filters: any = {}
+  let filters: any = {};
 
-  if (Object.keys(statusFilters).length > 0 && Object.keys(tagFilters).length > 0) {
-    filters.AND = [
-      statusFilters,
-      tagFilters
-    ]
+  if (
+    Object.keys(statusFilters).length > 0 &&
+    Object.keys(tagFilters).length > 0
+  ) {
+    filters.AND = [statusFilters, tagFilters];
   } else if (Object.keys(statusFilters).length > 0) {
-    filters = statusFilters
+    filters = statusFilters;
   } else if (Object.keys(tagFilters).length > 0) {
-    filters = tagFilters
+    filters = tagFilters;
   }
 
   const tasks = await prisma.task.findMany({
