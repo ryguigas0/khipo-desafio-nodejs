@@ -6,7 +6,9 @@ import { ResponseException } from "../errors/ResponseException";
 import authenticateToken, { TokenRequest } from "../middlewares/authHandler";
 import projectMemberIn from "../validation/projects/projectMemberSchema";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
-import { userView } from "../views/userView";
+import { userListView, userView } from "../views/userView";
+import { addMember, listMembers, removeMember } from "../services/memberService";
+import { isOwner, isOwnerOrMember } from "../services/projectService";
 
 const prisma = new PrismaClient()
 
@@ -29,24 +31,11 @@ controller.post(
 
             const projectId = Number.parseInt(req.params.projectId)
 
+            if (!await isOwner(projectId, userId)) throw new ResponseException("Only project owners can remove members!", 404)
+
             const memberEmail = req.body.memberEmail
 
-            const user = await prisma.user.findUnique({
-                where: {
-                    email: memberEmail
-                }
-            })
-
-            if (!user) {
-                throw new ResponseException(`User with email ${memberEmail} not found!`, 404)
-            }
-
-            let userToProject = await prisma.userToProject.create({
-                data: {
-                    projectId: projectId,
-                    userId: user.id
-                }
-            })
+            const user = await addMember(memberEmail, projectId)
 
             res.status(200).json(userView(user))
         } catch (error) {
@@ -67,44 +56,45 @@ controller.delete(
             return res.status(400).json({ errors: errors.array() });
         }
 
+        const userId = Number.parseInt(req.claims.userId)
+
         const projectId = Number.parseInt(req.params.projectId)
+
+        if (!await isOwner(projectId, userId)) throw new ResponseException("Only project owners can remove members!", 404)
 
         const memberEmail = req.body.memberEmail
 
         try {
-            const user = await prisma.user.findUnique({
-                where: {
-                    email: memberEmail
-                }
-            })
-
-            if (!user) {
-                throw new ResponseException(`User with email ${memberEmail} not found!`, 404)
-            }
-
-            let userToProject = await prisma.userToProject.findUnique({
-                where: {
-                    userId_projectId: {
-                        projectId: projectId,
-                        userId: user.id
-                    }
-                }
-            })
-
-            if (!userToProject) {
-                throw new ResponseException(`Member with email ${memberEmail} not found!`, 404)
-            }
-
-            await prisma.userToProject.delete({
-                where: {
-                    userId_projectId: {
-                        projectId: projectId,
-                        userId: user.id
-                    }
-                }
-            })
+            await removeMember(memberEmail, projectId)
 
             res.status(200).json({ ok: "Removed member!" })
+        } catch (error) {
+            if (error instanceof PrismaClientKnownRequestError && error.code === "P2025") {
+                return next(new ResponseException("Member not found!", 404))
+            }
+            next(error)
+        }
+    }
+)
+
+controller.get(
+    "/:projectId/members/",
+    async (req: TokenRequest, res: Response, next: NextFunction) => {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(400).json({ errors: errors.array() });
+        }
+
+        const userId = Number.parseInt(req.claims.userId)
+
+        const projectId = Number.parseInt(req.params.projectId)
+
+        if (!await isOwnerOrMember(projectId, userId)) throw new ResponseException("Only owners or members can see member list!", 403)
+
+        try {
+            const members = await listMembers(projectId)
+
+            res.status(200).json(userListView(members))
         } catch (error) {
             if (error instanceof PrismaClientKnownRequestError && error.code === "P2025") {
                 return next(new ResponseException("Member not found!", 404))

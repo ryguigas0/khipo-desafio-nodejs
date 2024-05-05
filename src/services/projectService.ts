@@ -1,4 +1,4 @@
-import { PrismaClient, Project } from "@prisma/client"
+import { Project } from "@prisma/client"
 import prisma from "../db/prismaClient"
 import { ResponseException } from "../errors/ResponseException"
 
@@ -96,9 +96,18 @@ export async function getProject(projectId: number, userId: number): Promise<Pro
     return project
 }
 
-export async function isOwnerOrMember(projectId: number, userId: number) {
-    const prisma = new PrismaClient()
+export async function isOwner(projectId: number, userId: number) {
+    const project = await prisma.project.findUnique({
+        where: {
+            id: projectId,
+            userOwnerId: userId
+        }
+    })
 
+    return !(project === null)
+}
+
+export async function isOwnerOrMember(projectId: number, userId: number) {
     const project = await prisma.project.findUnique({
         where: {
             id: projectId,
