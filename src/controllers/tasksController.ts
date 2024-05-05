@@ -228,13 +228,28 @@ controller.get(
 
             const { status } = req.query
 
-            const filters: any = {}
+            let filters: any = {}
 
             if (status) {
-                filters.status = status
-            }
+                if (status instanceof Array) {
+                    let orAcc = []
+                    let filterValues = status instanceof Array ? status : [status]
 
-            // const queryData = 
+                    for (let i = 0; i < filterValues.length; i++) {
+                        const filterValue = filterValues[i];
+
+                        orAcc.push({
+                            status: filterValue
+                        })
+                    }
+
+                    filters.OR = orAcc
+                } else {
+                    filters = {
+                        status: status
+                    }
+                }
+            }
 
             const tasks = await prisma.task.findMany({
                 include: {
@@ -245,9 +260,7 @@ controller.get(
                         }
                     }
                 },
-                where: {
-                    status: "done"
-                }
+                where: filters
             })
 
             res.status(200).send(tasksListView(tasks))
