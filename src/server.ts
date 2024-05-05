@@ -10,6 +10,7 @@ import generalErrorHandler from './middlewares/generalErrorHandler';
 import { port } from './env';
 import tasksController from './controllers/tasksController';
 import memberController from './controllers/memberController';
+import tagsController from './controllers/tagsController';
 
 
 
@@ -22,7 +23,8 @@ let controllers: Controller[] = [
   authController,
   projectController,
   tasksController,
-  memberController
+  memberController,
+  tagsController
 ]
 
 for (let i = 0; i < controllers.length; i++) {

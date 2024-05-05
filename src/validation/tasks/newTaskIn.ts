@@ -1,6 +1,4 @@
 import { Schema } from "express-validator"
-import projectMemberIn from "../projects/projectMemberSchema"
-import tagSchema from "../tags/tagIn"
 
 let newTaskIn: Schema = {
     projectId: {

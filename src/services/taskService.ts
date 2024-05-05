@@ -115,6 +115,16 @@ export async function updateTask(
     }
 }
 
+export async function getTask(taskId: number): Promise<Task | null> {
+    const task = await prisma.task.findUnique({
+        where: {
+            id: taskId
+        }
+    })
+
+    return task
+}
+
 export async function listTasks(status?: string[] | string): Promise<Task[]> {
     let filters: any = {}
 
@@ -152,4 +162,19 @@ export async function listTasks(status?: string[] | string): Promise<Task[]> {
     })
 
     return tasks
+}
+
+export async function hasTag(taskId: number, tagId: number): Promise<Boolean> {
+    const task = prisma.task.findUnique({
+        where: {
+            id: taskId,
+            tags: {
+                some: {
+                    tagId: tagId
+                }
+            }
+        }
+    })
+
+    return task !== null
 }
