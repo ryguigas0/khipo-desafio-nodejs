@@ -9,7 +9,7 @@
     "prod": "npm run build && node build/server.js",
     "dev": "npx nodemon src/server.ts",
     "migrate": "npx prisma migrate dev",
-    "lint": "npx eslint . --ext .ts",
+    "lint": "npx eslint .",
     "format": "npx prettier . --write"
   },
   "keywords": [],
