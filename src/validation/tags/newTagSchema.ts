@@ -25,6 +25,7 @@ let newTagSchema: Schema = {
   },
   title: {
     in: ["body"],
+    optional: true,
     notEmpty: {
       errorMessage: "Empty name"
     }
