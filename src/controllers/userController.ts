@@ -37,7 +37,7 @@ controller.post(
 );
 
 controller.put(
-  "/:userId",
+  "/",
   checkSchema(updateUserSchema),
   async (req: Request, res: Response, next: NextFunction) => {
     try {
