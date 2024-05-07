@@ -1,6 +1,6 @@
 import { Schema } from "express-validator";
 
-let newUserInSchema: Schema = {
+let newUserSchema: Schema = {
   name: {
     in: ["body"],
     notEmpty: {
@@ -31,4 +31,4 @@ let newUserInSchema: Schema = {
   }
 };
 
-export default newUserInSchema;
+export default newUserSchema;

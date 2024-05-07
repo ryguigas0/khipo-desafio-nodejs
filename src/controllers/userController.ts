@@ -2,8 +2,8 @@ import express, { Router, Request, Response, NextFunction } from "express";
 import { Controller } from "./controllerInterface";
 import { checkSchema, validationResult } from "express-validator";
 import { userListView, userView } from "../views/userView";
-import newUserInSchema from "../validation/user/NewUserIn";
-import updateUserInSchema from "../validation/user/UpdateUserInSchema";
+import newUserSchema from "../validation/user/NewUserSchema";
+import updateUserSchema from "../validation/user/UpdateUserSchema";
 import deleteUserSchema from "../validation/user/DeleteUserSchema";
 import {
   createUser,
@@ -17,7 +17,7 @@ const controller: Router = express.Router();
 
 controller.post(
   "/",
-  checkSchema(newUserInSchema),
+  checkSchema(newUserSchema),
   async (req: Request, res: Response, next: NextFunction) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -38,7 +38,7 @@ controller.post(
 
 controller.put(
   "/:userId",
-  checkSchema(updateUserInSchema),
+  checkSchema(updateUserSchema),
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const errors = validationResult(req);
@@ -48,12 +48,12 @@ controller.put(
 
       const userId = Number.parseInt(req.params.userId);
 
-      const { name, email, oldPassword, newPassword } = req.body;
+      const { name, email, newEmail, oldPassword, newPassword } = req.body;
 
       const user = await updateUser(
-        userId,
-        name,
         email,
+        newEmail,
+        name,
         oldPassword,
         newPassword
       );

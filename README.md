@@ -9,7 +9,7 @@
 1. Clone o projeto
 2. `cd khipo-desafio-nodejs`
 3. `docker compose up` e aguarde printar `[server]: server running at 0.0.0.0:4000`
-4. Abra a coleção de requisições `Insomnia_2024-05-05.json` no seu [Insomnia](https://insomnia.rest/)
+4. Abra a coleção de requisições `Insomnia_2024-05-07.json` no seu [Insomnia](https://insomnia.rest/)
 
 ## 🚀 Objetivo:
 

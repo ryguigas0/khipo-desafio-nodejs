@@ -58,22 +58,22 @@ export async function validatePassword(
   if (!user) throw new ResponseException("User not found!", 404);
 
   if (!(await argon2.verify(user.hashPassword, password))) {
-    throw new ResponseException("Unauthenticated: wrong password", 401);
+    throw new ResponseException("Invalid password!", 401);
   }
 
   return user;
 }
 
 export async function updateUser(
-  userId: number,
+  email: string,
   name?: string,
-  email?: string,
+  newEmail?: string,
   oldPassword?: string,
   newPassword?: string
 ): Promise<User> {
   const user = await prisma.user.findUnique({
     where: {
-      id: userId
+      email: email
     }
   });
 
@@ -85,8 +85,8 @@ export async function updateUser(
     updateData.name = name;
   }
 
-  if (email) {
-    updateData.email = email;
+  if (newEmail) {
+    updateData.email = newEmail;
   }
 
   // new old -> update password?
@@ -111,7 +111,7 @@ export async function updateUser(
   if (Object.keys(updateData).length > 0) {
     const updatedUser = await prisma.user.update({
       where: {
-        id: userId
+        id: user.id
       },
       data: updateData
     });

@@ -1,27 +1,33 @@
 import { Schema } from "express-validator";
 
-const updateUserInSchema: Schema = {
-  userId: {
-    in: ["params"],
-    notEmpty: {
-      errorMessage: "User ID not provided"
-    },
-    isInt: {
-      options: {
-        min: 0
-      }
+const updateUserSchema: Schema = {
+  // userId: {
+  //   in: ["params"],
+  //   notEmpty: {
+  //     errorMessage: "User ID not provided"
+  //   },
+  //   isInt: {
+  //     options: {
+  //       min: 0
+  //     }
+  //   }
+  // },
+  email: {
+    in: ["body"],
+    isEmail: {
+      errorMessage: "Invalid email"
     }
   },
   name: {
     in: ["body"],
     optional: true
   },
-  email: {
+  newEmail: {
     in: ["body"],
     optional: true,
     isEmail: {
       errorMessage: "Invalid email"
-    }
+    },
   },
   oldPassword: {
     optional: true,
@@ -51,4 +57,4 @@ const updateUserInSchema: Schema = {
   }
 };
 
-export default updateUserInSchema;
+export default updateUserSchema;
