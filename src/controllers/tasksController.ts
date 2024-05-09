@@ -13,9 +13,11 @@ import { isOwnerOrMember } from "../services/projectService";
 import {
   createTask,
   deleteTask,
+  getTask,
   listTasks,
   updateTask
 } from "../services/taskService";
+import getTaskSchema from "../validation/tasks/getTaskSchema";
 
 const controller: Router = express.Router();
 const route = "/projects";
@@ -79,6 +81,10 @@ controller.put(
 
       const taskId = Number.parseInt(req.params.taskId);
 
+      const task = await getTask(taskId);
+
+      if (!task) throw new ResponseException("Task not found!", 404)
+
       const { title, description, assignedMemberId, status } = req.body;
 
       const updatedTask = await updateTask(
@@ -96,6 +102,39 @@ controller.put(
     }
   }
 );
+
+controller.get(
+  "/:projectId/tasks/:taskId",
+  checkSchema(getTaskSchema),
+  async (req: TokenRequest, res: Response, next: NextFunction) => {
+    try {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
+      }
+
+      const userId = Number.parseInt(req.claims.userId);
+
+      const projectId = Number.parseInt(req.params.projectId);
+
+      if (!(await isOwnerOrMember(projectId, userId)))
+        throw new ResponseException(
+          "Only members or the owner of this project can access tasks!",
+          403
+        );
+
+      const taskId = Number.parseInt(req.params.taskId);
+
+      const task = await getTask(taskId);
+
+      if (!task) throw new ResponseException("Task not found!", 404)
+
+      res.status(200).json(taskView(task));
+    } catch (error) {
+      next(error);
+    }
+  }
+)
 
 controller.delete(
   "/:projectId/tasks/:taskId",
@@ -118,6 +157,10 @@ controller.delete(
         );
 
       const taskId = Number.parseInt(req.params.taskId);
+
+      const task = await getTask(taskId);
+
+      if (!task) throw new ResponseException("Task not found!", 404)
 
       await deleteTask(taskId);
 
