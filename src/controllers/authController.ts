@@ -26,7 +26,8 @@ controller.post(
     try {
       const user = await validatePassword(email, password);
       const claims = {
-        userId: user.id
+        userId: user.id,
+        userName: user.name
       };
 
       const accessToken = jwt.sign(claims, jwtSecret, {
