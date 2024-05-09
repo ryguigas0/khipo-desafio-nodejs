@@ -80,7 +80,7 @@ Desenvolver uma API para gerenciar um sistema de tarefas e projetos, permitindo 
 - Testes unitários e/ou de integração.
 - Documentação com Swagger.
 - Paginação nos endpoints.
-- Registro de logs.
+- [x] Registro de logs.
 - [x] Dockerização da aplicação.
 - [x] Uso de um linter (como ESLint) e formatador de código (como Prettier).
 
