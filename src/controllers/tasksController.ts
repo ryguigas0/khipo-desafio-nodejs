@@ -56,6 +56,7 @@ controller.post(
       );
 
       res.status(200).json(taskView(taskModel));
+      next()
     } catch (error) {
       next(error);
     }
@@ -97,6 +98,7 @@ controller.put(
       );
 
       res.status(200).send(taskView(updatedTask));
+      next()
     } catch (error) {
       return next(error);
     }
@@ -130,6 +132,7 @@ controller.get(
       if (!task) throw new ResponseException("Task not found!", 404)
 
       res.status(200).json(taskView(task));
+      next()
     } catch (error) {
       next(error);
     }
@@ -167,6 +170,7 @@ controller.delete(
       res.status(200).json({
         ok: "Deleted task!"
       });
+      next()
     } catch (error) {
       next(error);
     }
@@ -199,6 +203,7 @@ controller.get(
       );
 
       res.status(200).send(tasksListView(tasks));
+      next()
     } catch (error) {
       next(error);
     }

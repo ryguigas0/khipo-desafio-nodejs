@@ -30,6 +30,7 @@ controller.post(
       const user = await createUser(name, email, password);
 
       res.status(201).send(userView(user));
+      next()
     } catch (error: any) {
       next(error);
     }
@@ -59,6 +60,7 @@ controller.put(
       );
 
       res.status(200).send(userView(user));
+      next()
     } catch (error) {
       next(error);
     }
@@ -69,10 +71,11 @@ controller.put(
 // ADMIN ONLY ROUTES
 // -----------------------
 
-controller.get("/", async (req: Request, res: Response) => {
+controller.get("/", async (req: Request, res: Response, next: NextFunction) => {
   const users = await listUsers();
 
   res.status(200).send(userListView(users));
+  next()
 });
 
 controller.delete(
@@ -90,6 +93,7 @@ controller.delete(
       await deleteUser(userId);
 
       res.status(200).send({ ok: "Deleted user!" });
+      next()
     } catch (error) {
       next(error);
     }

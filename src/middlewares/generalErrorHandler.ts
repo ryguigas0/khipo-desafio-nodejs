@@ -7,11 +7,11 @@ export default function generalErrorHandler(
   res: Response,
   next: NextFunction
 ) {
-  console.log("GENERAL ERROR");
-
   let statusCode = err instanceof ResponseException ? err.statusCode : 500;
 
-  return res.status(statusCode).json({
+  res.status(statusCode).json({
     error: err.message
   });
+
+  next()
 }

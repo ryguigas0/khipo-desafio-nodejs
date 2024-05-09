@@ -35,6 +35,7 @@ controller.post(
       });
 
       res.status(201).send(tokenView(accessToken, jwtDuration));
+      next()
     } catch (error) {
       next(error);
     }

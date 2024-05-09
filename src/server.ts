@@ -12,6 +12,7 @@ import { port } from "./env";
 import tasksController from "./controllers/tasksController";
 import memberController from "./controllers/memberController";
 import tagsController from "./controllers/tagsController";
+import responseLogger from "./middlewares/responseLogger";
 
 const app = express();
 
@@ -35,7 +36,8 @@ for (let i = 0; i < controllers.length; i++) {
 }
 
 app.use(generalErrorHandler);
+app.use(responseLogger);
 
 app.listen(port, () => {
-  console.log(`[server]: server running at 0.0.0.0:${port}`);
+  console.log(`server running at 0.0.0.0:${port}`);
 });

@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import jwt, { JwtPayload } from "jsonwebtoken";
 import { jwtSecret } from "../env";
+import { ResponseException } from "../errors/ResponseException";
 
 export interface TokenRequest extends Request {
   claims?: any;
@@ -13,22 +14,17 @@ export default function authenticateToken(
 ) {
   const authHeader = req.headers["authorization"];
 
-  if (authHeader === undefined) return tokenError(res, "Missing JWT Token");
+  if (authHeader === undefined) throw new ResponseException("Missing JWT token", 401);
 
   const token = authHeader.split(" ")[1];
 
-  if (token === null) return tokenError(res, "Missing JWT Token");
+  if (token === null) throw new ResponseException("Missing JWT token", 401);
 
   jwt.verify(token, jwtSecret, function (err, claims) {
-    if (err) return tokenError(res, "Invalid Token");
+    if (err) throw new ResponseException("Invalid token", 401)
 
     req.claims = claims as JwtPayload;
-    next();
   });
-}
 
-function tokenError(res: Response, message: string) {
-  res.status(401).json({
-    error: message
-  });
+  next();
 }

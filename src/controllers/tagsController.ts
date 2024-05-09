@@ -48,7 +48,8 @@ controller.post(
 
       const tag = await createTag(taskId, title);
 
-      return res.status(201).json(tag);
+      res.status(201).json(tag);
+      next()
     } catch (error) {
       next(error);
     }
@@ -92,6 +93,7 @@ controller.put(
       const tag = await updateTag(tagId, title);
 
       res.status(200).json(tag);
+      next()
     } catch (error) {
       next(error);
     }
@@ -135,6 +137,7 @@ controller.delete(
       res.status(200).json({
         ok: "Deleted tag!"
       });
+      next()
     } catch (error) {
       next(error);
     }
@@ -168,6 +171,7 @@ controller.get(
       const tags = await listTags(taskId);
 
       res.status(200).send(tags);
+      next()
     } catch (error) {
       next(error);
     }

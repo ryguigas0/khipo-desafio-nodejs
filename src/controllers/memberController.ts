@@ -43,6 +43,7 @@ controller.post(
       const user = await addMember(memberEmail, projectId);
 
       res.status(200).json(userView(user));
+      next()
     } catch (error) {
       if (
         error instanceof PrismaClientKnownRequestError &&
@@ -82,6 +83,7 @@ controller.delete(
       await removeMember(memberEmail, projectId);
 
       res.status(200).json({ ok: "Removed member!" });
+      next()
     } catch (error) {
       if (
         error instanceof PrismaClientKnownRequestError &&
@@ -116,6 +118,7 @@ controller.get(
       const members = await listMembers(projectId);
 
       res.status(200).json(userListView(members));
+      next()
     } catch (error) {
       if (
         error instanceof PrismaClientKnownRequestError &&
