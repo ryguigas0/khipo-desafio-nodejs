@@ -40,7 +40,7 @@ let updateTaskSchema: Schema = {
     optional: true,
     isInt: {
       options: {
-        min: 0
+        min: -1
       }
     }
   },
