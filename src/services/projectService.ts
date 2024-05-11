@@ -17,7 +17,15 @@ export async function createProject(
   }
 
   const projModel = await prisma.project.create({
-    data: newProjectData
+    data: newProjectData,
+    include: {
+      owner: true,
+      members: {
+        include: {
+          user: true
+        }
+      }
+    }
   });
 
   return projModel;
@@ -112,7 +120,15 @@ export async function updateProject(
       where: {
         id: projectId
       },
-      data: updateData
+      data: updateData,
+      include: {
+        owner: true,
+        members: {
+          include: {
+            user: true
+          }
+        }
+      }
     });
   } else {
     throw new ResponseException("No update data provided!", 400);
