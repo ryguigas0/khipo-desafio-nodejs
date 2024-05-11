@@ -73,7 +73,7 @@ export async function updateTask(
   title?: string,
   description?: string,
   assignedMemberId?: number,
-  tags?: string[]
+  status?: string
 ): Promise<Task> {
   const task = await prisma.task.findUnique({
     where: {
@@ -115,7 +115,15 @@ export async function updateTask(
       where: {
         id: taskId
       },
-      data: updateData
+      data: updateData,
+      include: {
+        assignedMember: true,
+        tags: {
+          select: {
+            tag: true
+          }
+        }
+      }
     });
   } else {
     throw new ResponseException("No update data provided!", 400);
@@ -147,6 +155,14 @@ export async function getTask(taskId: number): Promise<Task | null> {
   const task = await prisma.task.findUnique({
     where: {
       id: taskId
+    },
+    include: {
+      assignedMember: true,
+      tags: {
+        select: {
+          tag: true
+        }
+      }
     }
   });
 

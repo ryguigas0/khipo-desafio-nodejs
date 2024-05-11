@@ -82,10 +82,6 @@ controller.put(
 
       const taskId = Number.parseInt(req.params.taskId);
 
-      const task = await getTask(taskId);
-
-      if (!task) throw new ResponseException("Task not found!", 404)
-
       const { title, description, assignedMemberId, status } = req.body;
 
       const updatedTask = await updateTask(

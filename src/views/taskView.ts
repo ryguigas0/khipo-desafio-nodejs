@@ -14,7 +14,7 @@ export interface TaskOut {
   createdAt: Date;
   status: string;
   projectId: number;
-  assignedMember?: UserOut;
+  assignedMember?: UserOut | null;
   tags?: TagOut[];
 }
 
@@ -41,6 +41,8 @@ export function taskView(task: TaskIn): TaskOut {
 
   if (task.assignedMember) {
     taskView.assignedMember = userView(task.assignedMember);
+  } else {
+    taskView.assignedMember = null
   }
 
   if (task.tags) {
