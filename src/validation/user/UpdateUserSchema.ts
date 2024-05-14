@@ -27,7 +27,7 @@ const updateUserSchema: Schema = {
     optional: true,
     isEmail: {
       errorMessage: "Invalid email"
-    },
+    }
   },
   oldPassword: {
     optional: true,

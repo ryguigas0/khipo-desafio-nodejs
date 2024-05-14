@@ -13,5 +13,5 @@ export default function generalErrorHandler(
     error: err.message
   });
 
-  next()
+  next();
 }

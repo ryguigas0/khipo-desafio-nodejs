@@ -90,14 +90,14 @@ export async function updateTask(
 
   if (assignedMemberId) {
     if (assignedMemberId === -1) {
-      updateData.assignedMemberId = null
+      updateData.assignedMemberId = null;
     } else if (!(await isOwnerOrMember(assignedMemberId, projectId))) {
       throw new ResponseException(
         "Only members or the owner of this project can be assigned tasks!",
         401
       );
     } else {
-      updateData.assignedMemberId = assignedMemberId
+      updateData.assignedMemberId = assignedMemberId;
     }
   }
 

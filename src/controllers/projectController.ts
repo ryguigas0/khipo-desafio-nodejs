@@ -38,7 +38,7 @@ controller.post(
       const projModel = await createProject(userOwnerId, name, description);
 
       res.status(200).json(projectView(projModel));
-      next()
+      next();
     } catch (error) {
       next(error);
     }
@@ -69,7 +69,7 @@ controller.put(
       );
 
       res.status(200).send(projectView(updatedProject));
-      next()
+      next();
     } catch (error) {
       next(error);
     }
@@ -93,7 +93,7 @@ controller.delete(
       await deleteProject(userOwnerId, projectId);
 
       res.status(200).send({ ok: "Deleted project!" });
-      next()
+      next();
     } catch (error) {
       next(error);
     }
@@ -117,7 +117,7 @@ controller.get(
       const project = await getProject(projectId, userId);
 
       res.status(200).send(projectView(project));
-      next()
+      next();
     } catch (error) {
       next(error);
     }
@@ -139,7 +139,7 @@ controller.get(
     const projects = await listProjects(userId, name as string);
 
     res.status(200).json(projectListView(projects));
-    next()
+    next();
   }
 );
 

@@ -42,7 +42,7 @@ export function taskView(task: TaskIn): TaskOut {
   if (task.assignedMember) {
     taskView.assignedMember = userView(task.assignedMember);
   } else {
-    taskView.assignedMember = null
+    taskView.assignedMember = null;
   }
 
   if (task.tags) {

@@ -1,5 +1,4 @@
 import express, { Router, Response, NextFunction } from "express";
-import { PrismaClient } from "@prisma/client";
 import { Controller } from "./controllerInterface";
 import { checkSchema, validationResult } from "express-validator";
 import { ResponseException } from "../errors/ResponseException";
@@ -56,7 +55,7 @@ controller.post(
       );
 
       res.status(200).json(taskView(taskModel));
-      next()
+      next();
     } catch (error) {
       next(error);
     }
@@ -85,8 +84,8 @@ controller.put(
       const { title, description, assignedMemberId, status } = req.body;
 
       const updatedTask = await updateTask(
-        projectId,
         taskId,
+        projectId,
         title,
         description,
         assignedMemberId,
@@ -94,7 +93,7 @@ controller.put(
       );
 
       res.status(200).send(taskView(updatedTask));
-      next()
+      next();
     } catch (error) {
       return next(error);
     }
@@ -125,15 +124,15 @@ controller.get(
 
       const task = await getTask(taskId);
 
-      if (!task) throw new ResponseException("Task not found!", 404)
+      if (!task) throw new ResponseException("Task not found!", 404);
 
       res.status(200).json(taskView(task));
-      next()
+      next();
     } catch (error) {
       next(error);
     }
   }
-)
+);
 
 controller.delete(
   "/:projectId/tasks/:taskId",
@@ -159,14 +158,14 @@ controller.delete(
 
       const task = await getTask(taskId);
 
-      if (!task) throw new ResponseException("Task not found!", 404)
+      if (!task) throw new ResponseException("Task not found!", 404);
 
       await deleteTask(taskId);
 
       res.status(200).json({
         ok: "Deleted task!"
       });
-      next()
+      next();
     } catch (error) {
       next(error);
     }
@@ -199,7 +198,7 @@ controller.get(
       );
 
       res.status(200).send(tasksListView(tasks));
-      next()
+      next();
     } catch (error) {
       next(error);
     }

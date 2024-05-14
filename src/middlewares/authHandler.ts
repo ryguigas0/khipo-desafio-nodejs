@@ -14,14 +14,15 @@ export default function authenticateToken(
 ) {
   const authHeader = req.headers["authorization"];
 
-  if (authHeader === undefined) throw new ResponseException("Missing JWT token", 401);
+  if (authHeader === undefined)
+    throw new ResponseException("Missing JWT token", 401);
 
   const token = authHeader.split(" ")[1];
 
   if (token === null) throw new ResponseException("Missing JWT token", 401);
 
   jwt.verify(token, jwtSecret, function (err, claims) {
-    if (err) throw new ResponseException("Invalid token", 401)
+    if (err) throw new ResponseException("Invalid token", 401);
 
     req.claims = claims as JwtPayload;
   });

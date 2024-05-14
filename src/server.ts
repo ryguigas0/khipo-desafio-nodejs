@@ -1,5 +1,5 @@
 import express from "express";
-import cors from 'cors'
+import cors from "cors";
 
 import { Controller } from "./controllers/controllerInterface";
 
@@ -17,9 +17,11 @@ import responseLogger from "./middlewares/responseLogger";
 const app = express();
 
 app.use(express.json());
-app.use(cors({
-  origin: true
-}))
+app.use(
+  cors({
+    origin: true
+  })
+);
 
 let controllers: Controller[] = [
   userController,
