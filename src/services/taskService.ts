@@ -142,8 +142,8 @@ export async function deleteTask(taskId: number): Promise<boolean> {
 
   if (!task) throw new ResponseException("Task not found!", 404);
 
-  if (task.status === "done")
-    throw new ResponseException("Cannot edit done tasks!", 401);
+  // if (task.status === "done")
+  //   throw new ResponseException("Cannot edit done tasks!", 401);
 
   await prisma.task.delete({
     where: {
